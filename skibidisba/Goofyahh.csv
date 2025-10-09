@@ -1,0 +1,9 @@
+Type,Description,Account,Date,Category
+Income,KFC,5604,9/11/2000,Salary
+Expenses,Subscription,99,9/11/2000,Others
+Expenses,Food,1355,9/11/2000,Essentials
+Income,Store rent,20000,8/11/2000,Others
+Income,Job #2,12000,8/1/2000,Salary
+Income,Job #1,16000,7/11/2000,Salary
+Expenses,Mobile data,149,6/11/2000,Essentials
+Expenses,Loan,999999,4/11/2000,Others
