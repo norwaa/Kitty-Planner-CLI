@@ -1,6 +1,6 @@
 if __name__ == "__main__":
-    import csv      ## Module for managing csv file
-    import os       ## Module for os interactions
+    import csv
+    import os
     
     userinput = ""
     budget_planner = []
@@ -8,19 +8,19 @@ if __name__ == "__main__":
     def loadBudgetData():       ## Loads csv file data
         
         while True:
-            csvname = input("Input CSV Filename. [FORMAT ######.csv]  .letmeout - Quit\n") + ".csv"
+            csvname = input("Input CSV Filename. [FORMAT ######]   [.letmeout] - Quit\n") + ".csv"
 
             if ".letmeout" in csvname:      ## Triggers when csvname contains .letmeout
                 print("")
-                print("\nQuit")
+                print("\nQuit.")
                 return
             
             if os.path.exists(csvname):     ## Checks whether file exists in folder
-                print("# Loading CSV Data #".center(50,"_"))
+                print("# Loading CSV Data #".center(60,"_"))
                 print("")
                 break
             print("")
-            print("# File Not Found #".center(50,"_"))
+            print("# File Not Found #".center(60,"_"))
         
         filename = str(csvname)
         two_d_list = []
@@ -43,69 +43,73 @@ if __name__ == "__main__":
 
     def addRecords():       ## Adds new records to the new csv file
         new_table = []
-        state = False
-
-        while state != True:        ## Repeats when values are not confirmed
-            userinput = input("Input Values To Be Added. [FORMAT ### ### ###...] .letmeout - Quit\n").split()
+        
+        while True:        ## Repeats when values are not confirmed
+            userinput = input("Input Values To Be Added. [FORMAT ### ### ###...] \n[.letmeout] - Quit\n").split()
             
             if ".letmeout" in userinput:      ## Triggers when csvname contains .letmeout
-                print("\nQuit")
+                print("\nQuit.")
                 return        
             
             changestate = input("\nConfirm Values? Y/N ")
             if changestate == "Y" or changestate == "y":
-                state = True
                 for i in range(0, len(userinput)):
-                    new_table.append(int(userinput[i]))
+                    new_table.append((userinput[i]))
                 budget_planner.append(new_table)
                 break        
         return
         
     def exportcsv(budget_planner):
-        userinput = input("Input CSV Filename.\n")
-        name = userinput+".csv"
-        with open(name, "w", newline='') as file:
-            writer = csv.writer(file)
-            writer.writerows(budget_planner)
-        print("# File Exported #".center(50,"_"))
-
+        while True:
+            
+            userinput = input("Input CSV Filename. [EXISTING FILENAME WILL BE OVERWRITED] \n[.letmeout] - Quit\n")
+            if ".letmeout" in userinput:      ## Triggers when csvname contains .letmeout
+                print("")
+                print("Quit.")
+                return
+            
+            changestate = input("\nConfirm Values? Y/N ")
+            if changestate == "Y" or changestate == "y":
+                name = userinput+".csv"
+                with open(name, "w", newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerows(budget_planner)
+                print("# File Exported #".center(60,"_"))
+                break   
 
     while True:
         print("")
-        print("[ Kikyou Terminal PBP UI ]".center(50,"_"))
-        print("_".center(50,"_"))
-        print("1. Load CSV Data")
-        print("2. Display Recent Records")
-        print("3. Add New Records")
-        print("4. Export Records")
-        print("Q/q. Quit")
-        print("_".center(50,"_"))
-        userinput = input("[ Waiting for input.. ] ")
+        print("[ Kikyou Terminal PBP UI ]".center(60,"_"))
+        print("_".center(60,"_"))
+        print("[1] Load CSV Data")
+        print("[2] Display Recent Records")
+        print("[3] Add New Records")
+        print("[4] Export Records")
+        print("[Q] Quit")
+        print("_".center(60,"_"))
+        userinput = input("Waiting for input..   ")
 
         if userinput == "1":
-            print("_".center(50,"_"))
+            print("_".center(60,"_"))
             print("triggered 1")
             loadBudgetData()
             print("")
             pass
         elif userinput == "2":
-            print("_".center(50,"_"))
-            print("triggered 2")
+            print("_".center(60,"_"))
             displayRecords(budget_planner)
             print("")
             pass
         elif userinput == "3":
-            print("_".center(50,"_"))
-            print("triggered 3")
+            print("_".center(60,"_"))
             addRecords()
             print("")
             pass
         elif userinput == "4":
-            print("_".center(50,"_"))
-            print("triggered 4")
+            print("_".center(60,"_"))
             exportcsv(budget_planner)
             print("")
             pass
         elif userinput == "Q" or userinput == "q":
-            print("Quit")
+            print("Quit.")
             break
