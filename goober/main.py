@@ -4,19 +4,21 @@ if __name__ == "__main__":
     from rich.console import Console
     from rich.table import Table
 
+    current_directory = os.getcwd()
+    print(f"Current working directory: {current_directory}")
+    
     userinput = ""
     budget_planner = []
-
-    # hi my name is ......
-
+    
     def loadBudgetData():       ## Loads csv file data
         
         while True:
             csvname = input("Input CSV Filename. [FORMAT ######]   [.letmeout] - Quit\n") + ".csv"
             magicword = csvname.replace(".", "").lower()
             
-            if ".letmeout" in "." + magicword:        ## Triggers when csvname contains .letmeout
-                print("")
+            print(csvname[0])
+            
+            if "letmeout" in magicword and csvname[0] == ".":  
                 print("\nQuit.")
                 return
             
@@ -41,7 +43,7 @@ if __name__ == "__main__":
         table = Table()
         for i in two_d_list:
             table.add_row(i)
-        
+         
         Console.print(table)
         
         return 
