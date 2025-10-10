@@ -1,16 +1,21 @@
 if __name__ == "__main__":
     import csv
     import os
-    
+    from rich.console import Console
+    from rich.table import Table
+
     userinput = ""
     budget_planner = []
+
+    # hi my name is ......
 
     def loadBudgetData():       ## Loads csv file data
         
         while True:
             csvname = input("Input CSV Filename. [FORMAT ######]   [.letmeout] - Quit\n") + ".csv"
-
-            if ".letmeout" in csvname:      ## Triggers when csvname contains .letmeout
+            magicword = csvname.replace(".", "").lower()
+            
+            if ".letmeout" in "." + magicword:        ## Triggers when csvname contains .letmeout
                 print("")
                 print("\nQuit.")
                 return
@@ -29,9 +34,15 @@ if __name__ == "__main__":
             list_of_rows = list(reader)
             for i in range(len(list_of_rows)):
                 two_d_list.append(list_of_rows[i])
-                
+        
+        for k in two_d_list:
+            print(k)
+        
+        table = Table()
         for i in two_d_list:
-            print(i)
+            table.add_row(i)
+        
+        Console.print(table)
         
         return 
 
@@ -44,10 +55,12 @@ if __name__ == "__main__":
     def addRecords():       ## Adds new records to the new csv file
         new_table = []
         
+        
         while True:        ## Repeats when values are not confirmed
-            userinput = input("Input Values To Be Added. [FORMAT ### ### ###...] \n[.letmeout] - Quit\n").split()
+            userinput = input("Input Values To Be Added. [FORMAT 'TYPE' 'DESCRIPTION' 'ACCOUNT' 'DATE' 'CATAGORY] \n[.letmeout] - Quit\n").split()
+            magicword = userinput[0].replace(".", "").lower()
             
-            if ".letmeout" in userinput:      ## Triggers when csvname contains .letmeout
+            if ".letmeout" in "." + magicword:      ## Triggers when csvname contains .letmeout (not case sensitive)
                 print("\nQuit.")
                 return        
             
@@ -62,8 +75,10 @@ if __name__ == "__main__":
     def exportcsv(budget_planner):
         while True:
             
-            userinput = input("Input CSV Filename. [EXISTING FILENAME WILL BE OVERWRITED] \n[.letmeout] - Quit\n")
-            if ".letmeout" in userinput:      ## Triggers when csvname contains .letmeout
+            userinput = input("Input CSV Filename. [EXISTING FILENAME WILL OVERWRITE] \n[.letmeout] - Quit\n")
+            magicword = userinput.replace(".", "").lower()
+            
+            if ".letmeout" in "." + magicword:     ## Triggers when csvname contains .letmeout
                 print("")
                 print("Quit.")
                 return
