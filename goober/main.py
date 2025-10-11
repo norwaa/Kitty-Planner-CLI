@@ -2,9 +2,12 @@ if __name__ == "__main__":
     import csv
     import os
     from tabulate import tabulate
+    from datetime import datetime
 
     userinput = ""
-    budget_planner = []
+    budget_planner = [["Type","Description","Account","Date","Category"]]
+
+
 
     ## LOADS CSV FILE DATA ##
     def loadBudgetData():
@@ -39,13 +42,12 @@ if __name__ == "__main__":
                     if list_of_rows[i][0] == "Income":
                         values.append(int(list_of_rows[i][2]))
                     else:
-                        values.append(-int(list_of_rows[i][2]))              
+                        values.append(-int(list_of_rows[i][2]))
 
+        ## PRINTS TABLE ##
         print(tabulate(data, headers=headers, tablefmt="pipe"))
-        print(f"\n\033[4m Monthly Spent. { sum(values) } \033[24m")     ## Using F strings, ANSI escape codes
-
         while True:
-            userinput = input("[R] Return [Q] Quit  ")
+            userinput = input(f"\n\033[4m Monthly Spent. { sum(values) }\033[24m _________________ [R] Return [Q] Quit  ")          ## Using F strings, ANSI escape codes
             if userinput == "Q" or userinput == "q":
                 return "Quit"
             elif userinput == "R" or userinput == "r":
@@ -53,13 +55,26 @@ if __name__ == "__main__":
                 print("")
                 break
 
+
+
     ## DISPLAY ADDED RECORDS ##
     def displayRecords(budget_planner):
-        for i in range(len(budget_planner)):
-            for j in range(len(budget_planner[i])):
-                print(budget_planner[i][j], end=" ")
-            print("")
-
+        headers = budget_planner[0]
+        data = []
+        values = []
+        for i in range(1, len(budget_planner)):
+            data.append(budget_planner[i])
+            if budget_planner[i] == "Income":
+                values.append(int(budget_planner[i][2]))
+            else:
+                values.append(-int(budget_planner[i][2]))
+                
+        ## PRINTS TABLE ##
+        print(tabulate(data, headers=headers, tablefmt="pipe"))
+        while True:
+            userinput = input(f"\n\033[4m Monthly Spent. { sum(values) }\033[24m ________________ [Press Enter To Quit.]  ")          ## Using F strings, ANSI escape codes
+            return
+    
     ## ADD NEW RECORDS TO NEW CSV FILE ##
     def addRecords():
         
@@ -67,49 +82,124 @@ if __name__ == "__main__":
         def letmeout(userinput):
             magicword = userinput.replace(".", "").lower()
             if "letmeout" in magicword and userinput[0] == ".":
-                return "Quit"  
+                return True
         
-        new_table = []
+        ## VALIDATES DATA ##
+        def validate(userinput):
+            try:
+                datetime.strptime(userinput, "%m.%d.%Y")
+                return True
+            except ValueError:
+                return False
+            
+        def assigndata(userinput):
+            if  userinput == "I" or userinput == "i":
+                return "Income"
+            elif userinput == "E" or userinput == "e":
+                return "Expenses"
+            elif userinput == "U" or userinput == "u":
+                return "Utilities"
+            elif userinput == "T" or userinput == "t":
+                return "Transport"
+            elif userinput == "R" or userinput == "r":
+                return "Rent"
+            elif userinput == "F" or userinput == "f":
+                return "Food"
+            elif userinput == "S" or userinput == "s":
+                return "Shopping"
+            return False
+
+
         while True:
-            temp = []
-            userinput = input("Enter Data Type. [I] Income [E] Expenses [.letmeout] Quit\n\n")
-            if letmeout(userinput) == "Quit":
-                break
-            print("_".center(65, "_"))
-            new_table.append(userinput)  
-                 
+            new_table = []
+            ## ENTER TYPE ##
+            while True:
+                userinput = input("Enter Data Type. [I] Income [E] Expenses [.letmeout] Quit\n\n")
+                if letmeout(userinput) == True:
+                    return("Quit")
+                if assigndata(userinput) != False:
+                    new_table.append(assigndata(userinput))
+                    print("_".center(65, "_"))
+                    break
+                print("\nInvalid Input.")
+                print("_".center(65, "_"))
+            
+            
+            ## ENTER DESCRIPTION ##
             userinput = input("Enter Description. [Enter To Leave Blank] [.letmeout] Quit\n\n")
-            if letmeout(userinput) == "Quit":
-                break
+            if letmeout(userinput) == True:
+                return("Quit")
             print("_".center(65, "_"))
             new_table.append(userinput)
             
-            userinput = input("Enter Account. [.letmeout] Quit\n\n")
-            if letmeout(userinput) == "Quit":
-                break
-            print("_".center(65, "_"))
-            new_table.append(userinput)
             
-            userinput = input("Enter Date. [FORMAT ##/##/####] [.letmeout] Quit\n\n")
-            if letmeout(userinput) == "Quit":
-                break
-            print("_".center(65, "_"))
-            new_table.append(userinput)
+            ## ENTER ACCOUNT ##
+            while True:   
+                userinput = input("Enter Account. [.letmeout] Quit\n\n")
+                if letmeout(userinput) == True:
+                    return("Quit")
+                try:
+                    new_table.append((int(userinput)))
+                    print("_".center(65, "_"))
+                    break
+                except ValueError:
+                    print("\nInvalid Input.")
+                    print("_".center(65, "_"))
+               
+               
+            ## ENTER DATE ##
+            while True: 
+                userinput = input("Enter Date. [FORMAT MM.DD.YYYY] [.letmeout] Quit\n\n")
+                if letmeout(userinput) == True:
+                    return("Quit")
+                
+                if validate(userinput) == True:
+                    print("_".center(65, "_"))
+                    new_table.append(userinput)
+                    break
+                print("\nInvalid Date.")
+                print("_".center(65, "_"))
+            
+            
+            ## ENTER CATAGORY ##
+            while True:
+                userinput = input("Enter Catagory. [.letmeout] Quit \n[U] Utilities [T] Transport [R] Rent [F] Food [S] Shopping\n\n")
+                if letmeout(userinput) == True:
+                    return("Quit")
+                if assigndata(userinput) != False:
+                    new_table.append(assigndata(userinput))
+                    print("_".center(65, "_"))
+                    break
+                print("\nInvalid Input.")
+                print("_".center(65, "_"))
+                
+            print(tabulate(new_table, headers=new_table,  tablefmt="pipe"))
 
-            userinput = input("Enter Catagory. [.letmeout] Quit \n[U] Utilities [T] Transport [R] Rent [F] Food [S] Shopping\n\n")
-            letmeout(userinput)
-            print("_".center(65, "_"))
-            new_table.append(userinput)
+            while True:
+                userinput = input("\nConfirm Values? [Y] Yes [N] No  ")
+                if userinput == "Y" or userinput == "y":
+                    budget_planner.append(new_table)
+                    
+                    while True:
+                        userinput = input("Add Another Record? [Y] Yes [N] No  ")
+                        while True:
+                            if userinput == "Y" or userinput == "y":
+                                print("_".center(65, "_"))
+                                return
+                            elif userinput == "N" or userinput == "n":
+                                return "Quit"
+                                print("_".center(65, "_"))
+                            break 
+                        print("Invalid Input.")
+                        print("_".center(65, "_"))
+                elif userinput == "N" or userinput == "n":
+                    print("_".center(65, "_"))
+                    return
+                print("Invalid Input.")
+                print("_".center(65, "_"))
+        return "Quit"
 
-            magicword = userinput[0].replace(".", "").lower()
 
-            print(f"magic word {magicword}\nnew_table {new_table}")
-
-            changestate = input("\nConfirm Values? Y/N ")
-            if changestate == "Y" or changestate == "y":
-                budget_planner.append(new_table)
-                break        
-        return
 
     ## EXPORT CSV ##
     def exportcsv(budget_planner):
@@ -121,7 +211,7 @@ if __name__ == "__main__":
             if "letmeout" in magicword and userinput[0] == ".":     ## Triggers when csvname contains .letmeout
                 return
 
-            changestate = input("\nConfirm Values? Y/N ")
+            changestate = input("\nConfirm Filename? Y/N ")
             if changestate == "Y" or changestate == "y":
                 name = userinput+".csv"
                 with open(name, "w", newline='') as file:
@@ -129,6 +219,8 @@ if __name__ == "__main__":
                     writer.writerows(budget_planner)
                 print("# File Exported #".center(65,"_"))
                 break   
+
+
 
     ## MAIN UI ##
     while True:
@@ -156,7 +248,9 @@ if __name__ == "__main__":
             pass
         elif userinput == "3":
             print("_".center(65, "_"))
-            addRecords()
+            while True:
+                if addRecords() == "Quit":
+                    break
             print("")
             pass
         elif userinput == "4":

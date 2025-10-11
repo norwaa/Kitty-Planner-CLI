@@ -1,6 +1,7 @@
 {
-    "autoHide.autoHidePanel": true,
+    "autoHide.autoHidePanel": false,
     "autoHidePlus.showLeftSideBarWhenDebug": false,
     "autoHidePlus.autoShowPanel": false,
-    "autoHide.autoHideSideBar": true
+    "autoHide.autoHideSideBar": true,
+    "autoHidePlus.autoHideRightSideBar": true
 }
