@@ -12,18 +12,18 @@ if __name__ == "__main__":
     ## LOADS CSV FILE DATA ##
     def loadBudgetData():
         while True:
-            userinput = input("Input CSV Filename. [FORMAT ######]   [.letmeout] - Quit\n") + ".csv"
+            userinput = input("Input CSV Filename. [FORMAT ######]   [.letmeout] - Quit\n\n") + ".csv"
             magicword = userinput.replace(".", "").lower()
 
             if "letmeout" in magicword and userinput[0] == ".":     ## Triggers when csvname contains .letmeout (not case sensitive)
                 return "Quit"
 
             if os.path.exists(userinput):     ## Checks whether file exists in folder
-                print("# Loading CSV Data #".center(65, "_"))
+                print("# Loading CSV Data #".center(66, "_"))
                 print("")
                 break
             print("")
-            print("# File Not Found #".center(65, "_"))
+            print("# File Not Found #".center(66, "_"))
 
         filename = str(userinput)
         data = []
@@ -51,8 +51,7 @@ if __name__ == "__main__":
             if userinput == "Q" or userinput == "q":
                 return "Quit"
             elif userinput == "R" or userinput == "r":
-                print("_".center(65, "_"))
-                print("")
+                print("_".center(66, "_"))
                 break
 
 
@@ -92,22 +91,26 @@ if __name__ == "__main__":
             except ValueError:
                 return False
             
-        def assigndata(userinput):
-            if  userinput == "I" or userinput == "i":
-                return "Income"
-            elif userinput == "E" or userinput == "e":
-                return "Expenses"
-            elif userinput == "U" or userinput == "u":
-                return "Utilities"
-            elif userinput == "T" or userinput == "t":
-                return "Transport"
-            elif userinput == "R" or userinput == "r":
-                return "Rent"
-            elif userinput == "F" or userinput == "f":
-                return "Food"
-            elif userinput == "S" or userinput == "s":
-                return "Shopping"
-            return False
+        def assigndata(userinput, switch):
+            while switch == False:
+                if userinput == "I" or userinput == "i":
+                    return "Income"
+                if userinput == "E" or userinput == "e":
+                    return "Expenses"
+                return "Invalid"
+                
+            while switch != False:
+                if userinput == "U" or userinput == "u":
+                    return "Utilities"
+                if userinput == "T" or userinput == "t":
+                    return "Transport"
+                if userinput == "R" or userinput == "r":
+                    return "Rent"
+                if userinput == "F" or userinput == "f":
+                    return "Food"
+                if userinput == "S" or userinput == "s":
+                    return "Shopping"
+                return "Invalid"
 
 
         while True:
@@ -117,19 +120,19 @@ if __name__ == "__main__":
                 userinput = input("Enter Data Type. [I] Income [E] Expenses [.letmeout] Quit\n\n")
                 if letmeout(userinput) == True:
                     return("Quit")
-                if assigndata(userinput) != False:
-                    new_table.append(assigndata(userinput))
-                    print("_".center(65, "_"))
+                if assigndata(userinput, False) != "Invalid":
+                    new_table.append(assigndata(userinput, False))
+                    print("_".center(66, "_"))
                     break
                 print("\nInvalid Input.")
-                print("_".center(65, "_"))
+                print("_".center(66, "_"))
             
             
             ## ENTER DESCRIPTION ##
             userinput = input("Enter Description. [Enter To Leave Blank] [.letmeout] Quit\n\n")
             if letmeout(userinput) == True:
                 return("Quit")
-            print("_".center(65, "_"))
+            print("_".center(66, "_"))
             new_table.append(userinput)
             
             
@@ -140,11 +143,11 @@ if __name__ == "__main__":
                     return("Quit")
                 try:
                     new_table.append((int(userinput)))
-                    print("_".center(65, "_"))
+                    print("_".center(66, "_"))
                     break
                 except ValueError:
                     print("\nInvalid Input.")
-                    print("_".center(65, "_"))
+                    print("_".center(66, "_"))
                
                
             ## ENTER DATE ##
@@ -154,11 +157,11 @@ if __name__ == "__main__":
                     return("Quit")
                 
                 if validate(userinput) == True:
-                    print("_".center(65, "_"))
+                    print("_".center(66, "_"))
                     new_table.append(userinput)
                     break
                 print("\nInvalid Date.")
-                print("_".center(65, "_"))
+                print("_".center(66, "_"))
             
             
             ## ENTER CATAGORY ##
@@ -166,37 +169,38 @@ if __name__ == "__main__":
                 userinput = input("Enter Catagory. [.letmeout] Quit \n[U] Utilities [T] Transport [R] Rent [F] Food [S] Shopping\n\n")
                 if letmeout(userinput) == True:
                     return("Quit")
-                if assigndata(userinput) != False:
-                    new_table.append(assigndata(userinput))
-                    print("_".center(65, "_"))
+                if assigndata(userinput, True) != "Invalid":
+                    new_table.append(assigndata(userinput,True))
+                    print("_".center(66, "_"))
                     break
                 print("\nInvalid Input.")
-                print("_".center(65, "_"))
-                
-            print(tabulate(new_table, headers=new_table,  tablefmt="pipe"))
-
+                print("_".center(66, "_"))
+            
+            
+            ## PRINTS PREWVIEW ##    
+            print("Record Preview.")
+            print(tabulate([new_table], ["Type","Description","Account","Date","Category"], tablefmt="pipe"))
             while True:
-                userinput = input("\nConfirm Values? [Y] Yes [N] No  ")
+                userinput = input("\nConfirm Values? [Y] Yes [N] No      ")
                 if userinput == "Y" or userinput == "y":
                     budget_planner.append(new_table)
-                    
                     while True:
-                        userinput = input("Add Another Record? [Y] Yes [N] No  ")
+                        userinput = input("Add Another Record? [Y] Yes [N] No   ")
                         while True:
                             if userinput == "Y" or userinput == "y":
-                                print("_".center(65, "_"))
+                                print("_".center(66, "_"))
                                 return
                             elif userinput == "N" or userinput == "n":
                                 return "Quit"
-                                print("_".center(65, "_"))
+                                print("_".center(66, "_"))
                             break 
                         print("Invalid Input.")
-                        print("_".center(65, "_"))
+                        print("_".center(66, "_"))
                 elif userinput == "N" or userinput == "n":
-                    print("_".center(65, "_"))
+                    print("_".center(66, "_"))
                     return
                 print("Invalid Input.")
-                print("_".center(65, "_"))
+                print("_".center(66, "_"))
         return "Quit"
 
 
@@ -217,7 +221,7 @@ if __name__ == "__main__":
                 with open(name, "w", newline='') as file:
                     writer = csv.writer(file)
                     writer.writerows(budget_planner)
-                print("# File Exported #".center(65,"_"))
+                print("# File Exported #".center(66,"_"))
                 break   
 
 
@@ -225,8 +229,8 @@ if __name__ == "__main__":
     ## MAIN UI ##
     while True:
         print("")
-        print("[ Kikyou Terminal PBP UI ]".center(65, "_"))
-        print("_".center(65, "_"))
+        print("[ Kikyou Terminal PBP UI ]".center(66, "_"))
+        print("_".center(66, "_"))
         print("[1] Load CSV Data")
         print("[2] Display Recent Records")
         print("[3] Add New Records")
