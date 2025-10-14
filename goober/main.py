@@ -18,21 +18,19 @@ if __name__ == "__main__":
     import pandas as pd
 
     userinput = ""
-    budget_planner = []
+    budget_planner = [["Type","Description","Account","Date","Category"]]
 
-    new_directory_path = "goober/"
-    try:
-        os.chdir(new_directory_path)
-        print(f"Successfully changed working directory to: {os.getcwd()}")
-    except FileNotFoundError:
-        print(f"Error: The directory '{new_directory_path}' does not exist.")
+    if os.getcwd() != os.path.dirname(__file__):
+        os.chdir(os.getcwd()+"/goober")
+
+
 
     ## DISPLAY ADDED RECORDS ##
     def previewEntry(budget_planner):
         headers = ["Type","Description","Account","Date","Category"]
         data = []
         values = []
-        for i in range(1, len(budget_planner)):
+        for i in range(0, len(budget_planner)):
             data.append(budget_planner[i])
             if budget_planner[i] == "Income":
                 values.append(int(budget_planner[i][2]))
@@ -156,7 +154,7 @@ if __name__ == "__main__":
                         userinput = input("Add Another Entry? [Y] Yes [N] No   ")
                         while True:
                             if userinput.lower() == "y":
-                                print("_".center(66, "="))
+                                print("=".center(66, "="))
                                 return
                             elif userinput.lower() == "n":
                                 print("")
@@ -194,14 +192,18 @@ if __name__ == "__main__":
                                 with open(userinput, "w", newline='') as file:
                                     writer = csv.writer(file)
                                     writer.writerows(budget_planner)
-                                break
+                                    
                             if changestate == "P" or changestate == "p":
                                 with open(userinput, "a", newline='') as file:
                                     writer = csv.writer(file)
                                     writer.writerows(budget_planner)
-                                break
-                    print("")
-                    print("# File Exported #".center(66,"_"))
+
+                    else:
+                        with open(userinput, "w", newline='') as file:
+                            writer = csv.writer(file)
+                            writer.writerows(budget_planner)
+                        print("")
+                        print("# File Exported #".center(66,"_"))
                     return
                 if changestate == "N" or changestate == "n":
                     print("_".center(66, "_"))
@@ -278,16 +280,11 @@ if __name__ == "__main__":
                 print(tabulate(csvfiles, headers=["# Databases Found Within Directory #".center(60, " ")], tablefmt="github"))
                 print("\nCurrently - Deletion Mode.")
                 print("")
-                userinput = input("Input Filename. [.letmeout] Quit\n") + ".csv"
+                userinput = str(input("Input Filename. [FORMAT ######] [.letmeout] Quit\n")) + ".csv"
                 magicword = userinput.replace(".", "").lower()
                 if "letmeout" in magicword and userinput[0] == ".":     ## Triggers when csvname contains .letmeout
                     return
                 print("")
-
-                try:
-                    int(userinput)
-                except ValueError:
-                    str(userinput)
 
                 while True:
                     changestate = input("Confirm Filename? [DELETION CANNOT BE REVERTED.]  [Y] Yes [N] No  ")
@@ -311,25 +308,127 @@ if __name__ == "__main__":
 
         ## SEARCH MODE ##
         def searchData():
-
             ## .letmeout ##
             def letmeout(userinput):
                 magicword = userinput.replace(".", "").lower()
                 if "letmeout" in magicword and userinput[0] == ".":
                     return True
 
+            
+            ## SORT DATABASE ##
+            def sortDatabase(data, values):
+                headers=["Type","Description","Account","Date","Category"] 
+                
+                ## BY ACCOUNT OR DATE OR CATEGORY ##
+                def sortby():
+                    global mode
+                    while True:
+                        userinput = input("Sort By? [T] Type [A] Account [D] Date [C] Category   ")
+                        if userinput.lower() == "a":
+                            mode = "Account"
+                            return mode
+                        elif userinput.lower() == "d":
+                            mode = "Date"
+                            return mode
+                        elif userinput.lower() == "c":
+                            mode = "Category"
+                            return mode
+                        elif userinput.lower() == "t":
+                            mode = "Type"
+                            return mode
+                        print("")
+                        print("Invalid Input.")
+                
+                ## ASCENDING OR DESCENDING ##
+                def asc_des():
+                    global order
+                    while True:
+                            userinput = input("Ascending/Descending? [A][D]   ")
+                            if userinput.lower() == "a":
+                                order = "Ascending"
+                                return True
+                            if userinput.lower() == "d":
+                                order = "Descending"
+                                return False
+                            print("")
+                            print("Invalid Input.")
+                
+                df = pd.DataFrame(data, columns=headers)
+                sorted_df = df.sort_values(by=sortby(), ascending=asc_des())
+                
+                print(data)
+                print("")
+                print(df)
+                print("")
+                print(sorted_df)
+                
+                print("")
+                print(f"# Sorted Records By {mode} ({order}) Within Directory #".center(66, "="))
+                print(tabulate(sorted_df, headers=["Type","Description","Account","Date","Category"], tablefmt="pipe", showindex=False))
+                userinput = input(f"\n\033[4m Total Spent. { sum(values) }\033[24m ________________ [Press Enter To Quit.]  ")          ## F STRINGS, ANSI ESCAPE CODES
+                return
+            
+            
             ## GLOBAL SEARCH ##
             def globalSearch():
                 while True:
-                    userinput = input("Ïnput Keyword / Value. [D] Disable Global Search")
+                    userinput = input("Input Keyword/Value. [D] Disable Global Search [S] Sort Directory \n")
+                    print("")
                     if userinput.lower() == "d":
+                        print("=".center(66, "="))
                         return
-
                     
+                    try:
+                        int(userinput)
+                    except ValueError:
+                        str(userinput)
 
-                pass 
+                    filenames = []
+                    header = ["Type","Description","Account","Date","Category"]
+                    data = []
+                    values = []
+                    matchedrecord = []
+                    
+                    for files in os.listdir(os.path.dirname(__file__)):         ## LIST ALL CSV EXTENSION FILES
+                        if files.endswith(".csv"):
+                            filenames.append(files)
+                    
+                    for stuff in filenames:
+                        with open(stuff, "r") as file:
+                            reader = csv.reader(file)
+                            list_of_rows = list(reader)
+                            for i in range(1, len(list_of_rows)):
+                                    data.append(list_of_rows[i])
+                                    if list_of_rows[i][0] == "Income":
+                                        values.append(int(list_of_rows[i][2]))
+                                    else:
+                                        values.append(-int(list_of_rows[i][2]))
+
+                        for record in list_of_rows:
+                            for item in record:
+                                try:
+                                    if item == userinput:
+                                        matchedrecord.append(record)
+                                except IndexError:
+                                    pass
+                    
+                    if userinput.lower() == "s":
+                        print("_".center(66, "_"))
+                        sortDatabase(data, values)
+                        print("")
+                        print("=".center(66, "="))
+                    else:
+                        if len(matchedrecord) == 0:
+                            print("No Matching Results.")
+                            print("_".center(66, "_"))
+                        else:
+                            print("# Search Result Within All Databases #".center(66, "="))
+                            print("")
+                            print(tabulate(matchedrecord, headers=headers, tablefmt="pipe"))
+                            print("") 
 
 
+            ## MAIN FILE SEARCH ##
             print("=".center(66, "="))
             while True:
                 while True:     ## CHECKS WHETHER FILE EXISTS
@@ -338,70 +437,79 @@ if __name__ == "__main__":
                     print("\nCurrently - Search Mode.")
                     print("")
 
-                    userinput = str(input("Input Filename. [G] Global Search [.letmeout] Quit\n")) + ".csv"
+                    userinput = str(input("Input Filename. [FORMAT ######] [G] Global Search [.letmeout] Quit\n"))
                     if letmeout(userinput) == True:
                         return
                     print("")
 
                     if userinput.lower() == "g":
-                        globalSearch(
-                            
-                        )
-
-                    if os.path.exists(userinput):
+                        globalSearch()
                         break
                     else:
-                        print("")
-                        print("# File Not Found #".center(66, "="))
+                        if os.path.exists(userinput+".csv"):
+                            filename = userinput+".csv"
+                            headers=["Type","Description","Account","Date","Category"]
+                            data = []
+                            values = []
 
-                data = []
-                values = []
+                           # while letmeout(userinput) != True:  ## GRABS ALL DATA FROM DATABASE
+                            with open(userinput+".csv", "r") as file:
+                                reader = csv.reader(file)
+                                list_of_rows = list(reader)
 
-                while letmeout(userinput) != True:  ## GRABS ALL DATA FROM DATABASE
-                    with open(userinput, "r") as file:
-                        reader = csv.reader(file)
-                        list_of_rows = list(reader)
+                            try:
+                                for i in range(1, len(list_of_rows)):
+                                    data.append(list_of_rows[i])
+                            except IndexError:
+                                pass
 
-                    try:
-                        for i in range(1, len(list_of_rows)):
-                            data.append(list_of_rows[i])
-                            if list_of_rows[i][0] == "Income":
-                                values.append(int(list_of_rows[i][2]))
-                            else:
-                                values.append(-int(list_of_rows[i][2]))
-                    except IndexError:
-                        pass
+                            if len(data) == 0:
+                                print("# Empty Database #".center(66, "="))
+                                break
+                            
+                            ## LOOPS THROUGH EVERY ITEM WITHIN RECORDS IN DATABASE AND FINDS MATCHING KEYWORD/VALUE ##
+                            while True:
+                                userinput = input(f"Input Keyword/Value. [Currently In {filename}] [.letmeout] Quit\n")
+                                print("")
+                                if letmeout(userinput) == True:
+                                    print("=".center(66, "="))
+                                    break
+                                try:
+                                    int(userinput)
+                                except ValueError:
+                                    str(userinput)
 
-                    if len(data) == 0:
-                        print("# Empty Database #".center(66, "="))
-                        break
-                    
-                    ## LOOPS THROUGH EVERY ITEM WITHIN RECORDS IN DATABASE AND FINDS MATCHING KEYWORD/VALUE ##
-                    while True:
-                        userinput = input(f"Input Keyword / Value. [Currently In {userinput}]  [.letmeout] Quit\n")
-                        print("")
-                        if letmeout(userinput) == True:
-                            print("=".center(66, "="))
-                            break
-                        try:
-                            int(userinput)
-                        except ValueError:
-                            str(userinput)
-
-                        matchedrecord = []
-                        for record in data:
-                            for item in record:
-                                if item == userinput:
-                                    matchedrecord.append(record)
-
-                        if len(matchedrecord) == 0:
-                            print("No Matching Results.")
-                            print("_".center(66, "_"))
+                                matchedrecord = []
+                                for record in data:
+                                    for item in record:
+                                        if item == userinput:
+                                            matchedrecord.append(record)
+                                
+                                if len(matchedrecord) == 0:
+                                    print("No Matching Results.")
+                                    print("_".center(66, "_"))
+                                else:
+                                    for i in range(0, len(matchedrecord)):
+                                        matchedrecord[i][2] = int(matchedrecord[i][2])
+                                        if matchedrecord[i][0] == "Income":
+                                            values.append(int(matchedrecord[i][2]))
+                                        else:
+                                            values.append(-int(matchedrecord[i][2]))
+                                    
+                                    print(values)
+                                    print("# Search Results #".center(66, "="))
+                                    print("")
+                                    print(tabulate(matchedrecord, headers=headers, tablefmt="pipe"))
+                                    userinput = input(f"\n\033[4m Total Spent. { sum(values) }\033[24m ____________ [S] Sort [Press Enter To Quit.]  ")
+                                    
+                                    if userinput.lower() == "s":
+                                        sortDatabase(matchedrecord, values)
+                                    print("")
                         else:
-                            print("# Search Results #".center(66, "="))
                             print("")
-                            print(tabulate(matchedrecord, headers=["Type","Description","Account","Date","Category"], tablefmt="pipe"))
-                            print("")
+                            print("# File Not Found #".center(66, "="))
+
+                        
 
 
 
