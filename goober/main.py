@@ -225,6 +225,10 @@ if __name__ == "__main__":
                 if "letmeout" in magicword and userinput[0] == ".":         ## LOOKS FOR ".lmetout"
                     return "Quit"
 
+                try:
+                    int(userinput)
+                except ValueError:
+                    str(userinput)
 
                 data = []
                 values = []
@@ -280,6 +284,11 @@ if __name__ == "__main__":
                     return
                 print("")
 
+                try:
+                    int(userinput)
+                except ValueError:
+                    str(userinput)
+
                 while True:
                     changestate = input("Confirm Filename? [DELETION CANNOT BE REVERTED.]  [Y] Yes [N] No  ")
                     if changestate == "Y" or changestate == "y":
@@ -311,7 +320,14 @@ if __name__ == "__main__":
 
             ## GLOBAL SEARCH ##
             def globalSearch():
-                pass
+                while True:
+                    userinput = input("Ïnput Keyword / Value. [D] Disable Global Search")
+                    if userinput.lower() == "d":
+                        return
+
+                    
+
+                pass 
 
 
             print("=".center(66, "="))
@@ -326,6 +342,11 @@ if __name__ == "__main__":
                     if letmeout(userinput) == True:
                         return
                     print("")
+
+                    if userinput.lower() == "g":
+                        globalSearch(
+                            
+                        )
 
                     if os.path.exists(userinput):
                         break
@@ -354,7 +375,7 @@ if __name__ == "__main__":
                     if len(data) == 0:
                         print("# Empty Database #".center(66, "="))
                         break
-
+                    
                     ## LOOPS THROUGH EVERY ITEM WITHIN RECORDS IN DATABASE AND FINDS MATCHING KEYWORD/VALUE ##
                     while True:
                         userinput = input(f"Input Keyword / Value. [Currently In {userinput}]  [.letmeout] Quit\n")
