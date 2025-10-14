@@ -1,7 +1,7 @@
 if __name__ == "__main__":
     import csv
     import os
-    
+
     try:
         from tabulate import tabulate
     except ModuleNotFoundError:
@@ -13,14 +13,19 @@ if __name__ == "__main__":
     except ModuleNotFoundError:
         print("\n!! Pandas module is not installed. Please install by running 'pip install pandas' within terminal. !!\n")
         exit()
-        
+
     from datetime import datetime
     import pandas as pd
-    
+
     userinput = ""
     budget_planner = []
 
-
+    new_directory_path = "goober/"
+    try:
+        os.chdir(new_directory_path)
+        print(f"Successfully changed working directory to: {os.getcwd()}")
+    except FileNotFoundError:
+        print(f"Error: The directory '{new_directory_path}' does not exist.")
 
     ## DISPLAY ADDED RECORDS ##
     def previewEntry(budget_planner):
@@ -33,23 +38,23 @@ if __name__ == "__main__":
                 values.append(int(budget_planner[i][2]))
             else:
                 values.append(-int(budget_planner[i][2]))
-        
-        print("# Database Preview #".center(66, "_")) 
+
+        print("# Database Preview #".center(66, "_"))
         print("")
         print(tabulate(data, headers=headers, tablefmt="pipe"))         ## PRINTS TABLE
         while True:
             userinput = input(f"\n\033[4m Monthly Spent. { sum(values) }\033[24m ________________ [Press Enter To Quit.]  ")          ## F STRINGS, ANSI ESCAPE CODES
             return
-    
+
     ## ADD NEW RECORDS TO NEW CSV FILE ##
     def addEntry():
-        
+
         ## LOOKS FOR THE KEYWORD "".LETMEOUT" ON EVERY INPUT ##
         def letmeout(userinput):
             magicword = userinput.replace(".", "").lower()
             if "letmeout" in magicword and userinput[0] == ".":
                 return True
-        
+
         ## VALIDATES DATA ##
         def validate(userinput):
             try:
@@ -57,8 +62,8 @@ if __name__ == "__main__":
                 return True
             except ValueError:
                 return False
-        
-        ## RETURNS SPECIFIC KEYWORD FROM SYNTAX ##  
+
+        ## RETURNS SPECIFIC KEYWORD FROM SYNTAX ##
         def assigndata(userinput, switch):
             while switch == False:
                 if userinput.lower() == "i":
@@ -101,7 +106,7 @@ if __name__ == "__main__":
             new_table.append(userinput)
 
             ## ENTER ACCOUNT ##
-            while True:   
+            while True:
                 userinput = input("Enter Account. [.letmeout] Quit\n\n")
                 if letmeout(userinput) == True:
                     return("Quit")
@@ -114,11 +119,11 @@ if __name__ == "__main__":
                     print("_".center(66, "_"))
 
             ## ENTER DATE ##
-            while True: 
+            while True:
                 userinput = input("Enter Date. [FORMAT MM.DD.YYYY] [.letmeout] Quit\n\n")
                 if letmeout(userinput) == True:
                     return("Quit")
-                
+
                 if validate(userinput) == True:
                     print("_".center(66, "_"))
                     new_table.append(userinput)
@@ -140,7 +145,7 @@ if __name__ == "__main__":
                 print("\nInvalid Input.")
                 print("_".center(66, "_"))
 
-            ## PRINTS PREWVIEW ##    
+            ## PRINTS PREWVIEW ##
             print("")
             print(tabulate([new_table], ["Type","Description","Account","Date","Category"], tablefmt="pipe"))
             while True:
@@ -157,7 +162,7 @@ if __name__ == "__main__":
                                 print("")
                                 print("# Database Created #".center(66, "="))
                                 return "Quit"
-                            break 
+                            break
                         print("Invalid Input.")
                         print("_".center(66, "_"))
                 elif userinput.lower() == "n":
@@ -172,13 +177,13 @@ if __name__ == "__main__":
     ## EXPORT CSV ##
     def exportcsv(budget_planner):
         while True:
-            
+
             userinput = input("Input Filename. \n[.letmeout] Quit\n\n") + ".csv"
             magicword = userinput.replace(".", "").lower()
             if "letmeout" in magicword and userinput[0] == ".":     ## Triggers when csvname contains .letmeout
                 return
             print("")
-            
+
             while True:
                 changestate = input("Confirm Filename? [Y] Yes [N] No   ")
                 if changestate == "Y" or changestate == "y":
@@ -202,12 +207,12 @@ if __name__ == "__main__":
                     print("_".center(66, "_"))
                     break
 
-    
-    
+
+
     ## BROWSING DIRECTORY CSVS ##
     def browseDatabase():
         csvfiles = []
-        
+
          ## LOADING MODE ##
         def loadBudgetData():
             while True:
@@ -219,11 +224,11 @@ if __name__ == "__main__":
                 magicword = userinput.replace(".", "").lower()
                 if "letmeout" in magicword and userinput[0] == ".":         ## LOOKS FOR ".lmetout"
                     return "Quit"
-                
-                
+
+
                 data = []
                 values = []
-                
+
                 if os.path.exists(userinput):       ## CHECKS WHETHER FILE EXISTS && GRABS ALL DATA FROM DATABASE
                     with open(userinput, "r") as file:
                         obtainedheader = False
@@ -240,7 +245,7 @@ if __name__ == "__main__":
                                     values.append(int(list_of_rows[i][2]))
                                 else:
                                     values.append(-int(list_of_rows[i][2]))
-                    
+
                     if len(data) == 0:
                         print("# Empty Database #".center(66, "="))
                     else:
@@ -259,8 +264,8 @@ if __name__ == "__main__":
                 else:
                     print("")
                     print("# File Not Found #".center(66, "="))
-        
-        
+
+
         ## DELETION MODE ##
         def deleteData():
             print("=".center(66, "="))
@@ -274,7 +279,7 @@ if __name__ == "__main__":
                 if "letmeout" in magicword and userinput[0] == ".":     ## Triggers when csvname contains .letmeout
                     return
                 print("")
-                
+
                 while True:
                     changestate = input("Confirm Filename? [DELETION CANNOT BE REVERTED.]  [Y] Yes [N] No  ")
                     if changestate == "Y" or changestate == "y":
@@ -292,98 +297,106 @@ if __name__ == "__main__":
                     if changestate == "N" or changestate == "n":
                         print("_".center(66, "_"))
                     break
-            return    
-        
-        
+            return
+
+
         ## SEARCH MODE ##
         def searchData():
-            
+
             ## .letmeout ##
             def letmeout(userinput):
                 magicword = userinput.replace(".", "").lower()
                 if "letmeout" in magicword and userinput[0] == ".":
                     return True
-            
+
             ## GLOBAL SEARCH ##
             def globalSearch():
                 pass
-            
-            
+
+
             print("=".center(66, "="))
             while True:
-                print("")
-                print(tabulate(csvfiles, headers=["# Databases Found Within Directory #".center(60, " ")], tablefmt="github"))
-                print("\nCurrently - Search Mode.")
-                print("")
-                userinput = str(input("Input Filename. [G] Global Search [.letmeout] Quit\n")) + ".csv"
-                if letmeout(userinput) == True:
-                    return
-                print("")
-                
-                data = []
-                values = []
-                
-                while True:
-                    if not os.path.exists(userinput):       ## CHECKS WHETHER FILE EXISTS AND GRABS ALL DATA FROM DATABASE
+                while True:     ## CHECKS WHETHER FILE EXISTS
+                    print("")
+                    print(tabulate(csvfiles, headers=["# Databases Found Within Directory #".center(60, " ")], tablefmt="github"))
+                    print("\nCurrently - Search Mode.")
+                    print("")
+
+                    userinput = str(input("Input Filename. [G] Global Search [.letmeout] Quit\n")) + ".csv"
+                    if letmeout(userinput) == True:
+                        return
+                    print("")
+
+                    if os.path.exists(userinput):
+                        break
+                    else:
                         print("")
                         print("# File Not Found #".center(66, "="))
+
+                data = []
+                values = []
+
+                while letmeout(userinput) != True:  ## GRABS ALL DATA FROM DATABASE
+                    with open(userinput, "r") as file:
+                        reader = csv.reader(file)
+                        list_of_rows = list(reader)
+
+                    try:
+                        for i in range(1, len(list_of_rows)):
+                            data.append(list_of_rows[i])
+                            if list_of_rows[i][0] == "Income":
+                                values.append(int(list_of_rows[i][2]))
+                            else:
+                                values.append(-int(list_of_rows[i][2]))
+                    except IndexError:
+                        pass
+
+                    if len(data) == 0:
+                        print("# Empty Database #".center(66, "="))
                         break
-                    
-                    else:
-                        with open(userinput, "r") as file:
-                            reader = csv.reader(file)
-                            list_of_rows = list(reader)
 
-                            try:
-                                for i in range(1, len(list_of_rows)):
-                                    data.append(list_of_rows[i])
-                                    if list_of_rows[i][0] == "Income":
-                                        values.append(int(list_of_rows[i][2]))
-                                    else:
-                                        values.append(-int(list_of_rows[i][2]))
-                            except IndexError:
-                                pass
-                            
-                            if len(data) == 0:
-                                print("# Empty Database #".center(66, "="))
-                                break
-                            
-                            ## LOOPS THROUGH EVERY ITEM WITHIN RECORDS IN DATABASE AND FINDS MATCHING KEYWORD/VALUE ##    
-                            while True:
-                                userinput = input(f"Input Keyword / Value. [Currently In {userinput}]  [.letmeout] Quit\n")
-                                print("")
-                                if letmeout(userinput) == True:
-                                    break
-                                try:
-                                    int(userinput) 
-                                except ValueError:
-                                    str(userinput)
+                    ## LOOPS THROUGH EVERY ITEM WITHIN RECORDS IN DATABASE AND FINDS MATCHING KEYWORD/VALUE ##
+                    while True:
+                        userinput = input(f"Input Keyword / Value. [Currently In {userinput}]  [.letmeout] Quit\n")
+                        print("")
+                        if letmeout(userinput) == True:
+                            print("=".center(66, "="))
+                            break
+                        try:
+                            int(userinput)
+                        except ValueError:
+                            str(userinput)
 
-                                matchedrecord = []
-                                for record in data:
-                                    for item in record:
-                                        if item == userinput:
-                                            matchedrecord.append(record)
+                        matchedrecord = []
+                        for record in data:
+                            for item in record:
+                                if item == userinput:
+                                    matchedrecord.append(record)
 
-                                if len(matchedrecord) == 0:
-                                    print("No Matching Results.")
-                                else:
-                                    print("# Search Results #".center(66, "="))
-                                    print("")
-                                    print(tabulate(matchedrecord, headers=["Type","Description","Account","Date","Category"], tablefmt="pipe"))
-                                    print("")
-        
+                        if len(matchedrecord) == 0:
+                            print("No Matching Results.")
+                            print("_".center(66, "_"))
+                        else:
+                            print("# Search Results #".center(66, "="))
+                            print("")
+                            print(tabulate(matchedrecord, headers=["Type","Description","Account","Date","Category"], tablefmt="pipe"))
+                            print("")
+
+
+
         ## BROWSE MODE MAIN UI ##
-        counter = 0        
+        counter = 0
         for files in os.listdir(os.path.dirname(__file__)):         ## LIST ALL CSV EXTENSION FILES
             if files.endswith(".csv"):
                 counter += 1
                 csvfiles.append([files])
         if counter == 0:
             print("No Databases Are Found.")
-            return 
-        
+            return
+
         while True:
+            print("")
+            print("=".center(66, "="))
             print("")
             print(tabulate(csvfiles, headers=["# Databases Found Within Directory #".center(60, " ")], tablefmt="github"))
             print("\nCurrently - Overview Mode.")
@@ -401,12 +414,12 @@ if __name__ == "__main__":
                 deleteData()
                 print("=".center(66, "="))
             if userinput.lower() == "s":
+                print("")
                 searchData()
             if "letmeout" in magicword and userinput[0] == ".":     ## Triggers when csvname contains .letmeout
                 return
-        return
 
-                
+
     ## MAIN UI ##
     while True:
         print("")
@@ -423,23 +436,22 @@ if __name__ == "__main__":
         print("")
 
         if userinput == "1":
-            print("=".center(66, "="))
             browseDatabase()
         elif userinput == "2":
-            print("=".center(66, "="))    
+            print("=".center(66, "="))
             print("")
             previewEntry(budget_planner)
             print("")
             pass
         elif userinput == "3":
             print("=".center(66, "="))
-            print("") 
+            print("")
             while True:
                 if addEntry() == "Quit":
                     break
             pass
         elif userinput == "4":
-            print("=".center(66, "="))    
+            print("=".center(66, "="))
             print("")
             exportcsv(budget_planner)
             print("")
