@@ -27,16 +27,20 @@ if __name__ == "__main__":
 
     ## DISPLAY ADDED RECORDS ##
     def previewEntry(budget_planner):
-        headers = ["Type","Description","Account","Date","Category"]
+        headers = budget_planner[0]
         data = []
         values = []
-        for i in range(0, len(budget_planner)):
+        for i in range(1, len(budget_planner)):
             data.append(budget_planner[i])
-            if budget_planner[i] == "Income":
-                values.append(int(budget_planner[i][2]))
-            else:
-                values.append(-int(budget_planner[i][2]))
+            print(budget_planner[i][0])
 
+            values.append(int(budget_planner[i][2]))
+        #    if budget_planner[i][0] == "Income":
+        #        values.append(int(budget_planner[i][2]))
+        #    else:
+        #        values.append(-int(budget_planner[i][2]))
+
+        print(values)
         print("# Database Preview #".center(66, "_"))
         print("")
         print(tabulate(data, headers=headers, tablefmt="pipe"))         ## PRINTS TABLE
@@ -108,16 +112,20 @@ if __name__ == "__main__":
                 userinput = input("Enter Account. [.letmeout] Quit\n\n")
                 if letmeout(userinput) == True:
                     return("Quit")
+                
                 try:
-                    if new_table[0] == "Income":
-                        new_table.append((int(userinput)))
-                    else:
-                        new_table.append(-int(userinput))
-                    print("_".center(66, "_"))
-                    break
+                    if userinput.isdigit() == True:
+                        if new_table[0] == "Income":
+                            new_table.append((int(userinput)))
+                        else:
+                            new_table.append(-int(userinput))
+                        print("_".center(66, "_"))
+                        break
                 except ValueError:
-                    print("\nInvalid Input.")
-                    print("_".center(66, "_"))
+                    pass
+
+                print("\nInvalid Input.")
+                print("_".center(66, "_"))
 
             ## ENTER DATE ##
             while True:
@@ -146,7 +154,7 @@ if __name__ == "__main__":
                 print("\nInvalid Input.")
                 print("_".center(66, "_"))
 
-            ## PRINTS PREWVIEW ##
+            ## PRINTS PREVIEW ##
             print("")
             print(tabulate([new_table], ["Type","Description","Account","Date","Category"], tablefmt="pipe"))
             while True:
@@ -225,7 +233,7 @@ if __name__ == "__main__":
                 print(tabulate(csvfiles, headers=["# Databases Found Within Directory #".center(60, " ")], tablefmt="github"))
                 print("\nCurrently - Loading Mode")
                 print("")
-                userinput = str(input("Input Filename. [FORMAT ######]   [.letmeout] Quit\n")) + ".csv"
+                userinput = str(input("Input Filename. [FORMAT ######]  [.letmeout] Quit\n")) + ".csv"
                 magicword = userinput.replace(".", "").lower()
                 if "letmeout" in magicword and userinput[0] == ".":         ## LOOKS FOR ".lmetout"
                     return "Quit"
@@ -250,10 +258,11 @@ if __name__ == "__main__":
                                 obtainedheader = True
                             else:
                                 data.append(list_of_rows[i])
-                                if list_of_rows[i][0] == "Income":
-                                    values.append(int(list_of_rows[i][2]))
-                                else:
-                                    values.append(-int(list_of_rows[i][2]))
+                                values.append(int(list_of_rows[i][2]))
+                            #    if list_of_rows[i][0] == "Income":
+                            #        values.append(int(list_of_rows[i][2]))
+                            #    else:
+                            #        values.append(-int(list_of_rows[i][2]))
 
                     if len(data) == 0:
                         print("# Empty Database #".center(66, "="))
@@ -290,7 +299,7 @@ if __name__ == "__main__":
                 print("")
 
                 while True:
-                    changestate = input("Confirm Filename? [DELETION CANNOT BE REVERTED.]  [Y] Yes [N] No  ")
+                    changestate = input("Confirm Filename? [DELETION CANNOT BE REVERTED.] [Y] Yes [N] No  ")
                     if changestate == "Y" or changestate == "y":
                         if os.path.exists(userinput):       ## CHECK WHETHER FILE EXISTS
                             print("")
@@ -305,8 +314,8 @@ if __name__ == "__main__":
                             break
                     if changestate == "N" or changestate == "n":
                         print("_".center(66, "_"))
-                    break
-            return
+                        break
+
 
 
         ## SEARCH MODE ##
@@ -358,19 +367,13 @@ if __name__ == "__main__":
                             print("Invalid Input.")
 
                 sorted_df = df.sort_values(by=sortby(), ascending=asc_des())
-
-                print(data)
-                print("")
-                print(df)
-                print("")
-                print(sorted_df)
-
                 values = []
                 for i in range(0, len(data)):
-                    if data[i][0] == "Income":
-                        values.append(int(data[i][2]))
-                    else:
-                        values.append(-int(data[i][2]))
+                    values.append(int(data[i][2]))
+                    #if data[i][0] == "Income":
+                    #    values.append(int(data[i][2]))
+                    #else:
+                    #    values.append(-int(data[i][2]))
 
                 print("")
                 print(f"# Sorted Records By {mode} ({order}) Within Directory #".center(66, "="))
@@ -519,8 +522,6 @@ if __name__ == "__main__":
                         else:
                             print("")
                             print("# File Not Found #".center(66, "="))
-
-
 
 
 
