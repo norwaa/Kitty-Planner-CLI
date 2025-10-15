@@ -109,7 +109,10 @@ if __name__ == "__main__":
                 if letmeout(userinput) == True:
                     return("Quit")
                 try:
-                    new_table.append((int(userinput)))
+                    if new_table[0] == "Income":
+                        new_table.append((int(userinput)))
+                    else:
+                        new_table.append()
                     print("_".center(66, "_"))
                     break
                 except ValueError:
@@ -398,6 +401,7 @@ if __name__ == "__main__":
                             reader = csv.reader(file)
                             list_of_rows = list(reader)
                             for i in range(1, len(list_of_rows)):
+                                    list_of_rows[i][2] = int(list_of_rows[i][2])
                                     data.append(list_of_rows[i])
                                     if list_of_rows[i][0] == "Income":
                                         values.append(int(list_of_rows[i][2]))
