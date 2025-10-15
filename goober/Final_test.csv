@@ -1,0 +1,8 @@
+Type,Description,Account,Date,Category
+Income,Bus fee,120,2025.12.02,Transport
+Income,Sushi,400,2025.12.10,Food
+Expenses,Bus fee,-120,2025.12.02,Transport
+Expenses,Sushi,-450,2025.12.9,Food
+Expenses,Local store,-12000,2025.04.12,Utilities
+Expenses,Store rent,-8000,2025.03.01,Rent
+Income,Savings,1000,2025.05.04,Utilities
