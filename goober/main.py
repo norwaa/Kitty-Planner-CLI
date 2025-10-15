@@ -56,7 +56,7 @@ if __name__ == "__main__":
         ## VALIDATES DATA ##
         def validate(userinput):
             try:
-                datetime.strptime(userinput, "%m.%d.%Y")
+                datetime.strptime(userinput, "%Y-%m-%d")
                 return True
             except ValueError:
                 return False
@@ -112,7 +112,7 @@ if __name__ == "__main__":
                     if new_table[0] == "Income":
                         new_table.append((int(userinput)))
                     else:
-                        new_table.append()
+                        new_table.append(-int(userinput))
                     print("_".center(66, "_"))
                     break
                 except ValueError:
@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
             ## ENTER DATE ##
             while True:
-                userinput = input("Enter Date. [FORMAT MM.DD.YYYY] [.letmeout] Quit\n\n")
+                userinput = input("Enter Date. [FORMAT YYYY-MM-DD] [.letmeout] Quit\n\n")
                 if letmeout(userinput) == True:
                     return("Quit")
 
@@ -195,7 +195,7 @@ if __name__ == "__main__":
                                 with open(userinput, "w", newline='') as file:
                                     writer = csv.writer(file)
                                     writer.writerows(budget_planner)
-                                    
+
                             if changestate == "P" or changestate == "p":
                                 with open(userinput, "a", newline='') as file:
                                     writer = csv.writer(file)
@@ -317,11 +317,12 @@ if __name__ == "__main__":
                 if "letmeout" in magicword and userinput[0] == ".":
                     return True
 
-            
+
             ## SORT DATABASE ##
             def sortDatabase(data, values):
-                headers=["Type","Description","Account","Date","Category"] 
-                
+                headers=["Type","Description","Account","Date","Category"]
+                df = pd.DataFrame(data, columns=headers)
+
                 ## BY ACCOUNT OR DATE OR CATEGORY ##
                 def sortby():
                     global mode
@@ -341,7 +342,7 @@ if __name__ == "__main__":
                             return mode
                         print("")
                         print("Invalid Input.")
-                
+
                 ## ASCENDING OR DESCENDING ##
                 def asc_des():
                     global order
@@ -355,23 +356,29 @@ if __name__ == "__main__":
                                 return False
                             print("")
                             print("Invalid Input.")
-                
-                df = pd.DataFrame(data, columns=headers)
+
                 sorted_df = df.sort_values(by=sortby(), ascending=asc_des())
-                
+
                 print(data)
                 print("")
                 print(df)
                 print("")
                 print(sorted_df)
-                
+
+                values = []
+                for i in range(0, len(data)):
+                    if data[i][0] == "Income":
+                        values.append(int(data[i][2]))
+                    else:
+                        values.append(-int(data[i][2]))
+
                 print("")
                 print(f"# Sorted Records By {mode} ({order}) Within Directory #".center(66, "="))
                 print(tabulate(sorted_df, headers=["Type","Description","Account","Date","Category"], tablefmt="pipe", showindex=False))
                 userinput = input(f"\n\033[4m Total Spent. { sum(values) }\033[24m ________________ [Press Enter To Quit.]  ")          ## F STRINGS, ANSI ESCAPE CODES
                 return
-            
-            
+
+
             ## GLOBAL SEARCH ##
             def globalSearch():
                 while True:
@@ -380,7 +387,7 @@ if __name__ == "__main__":
                     if userinput.lower() == "d":
                         print("=".center(66, "="))
                         return
-                    
+
                     try:
                         int(userinput)
                     except ValueError:
@@ -391,11 +398,11 @@ if __name__ == "__main__":
                     data = []
                     values = []
                     matchedrecord = []
-                    
+
                     for files in os.listdir(os.path.dirname(__file__)):         ## LIST ALL CSV EXTENSION FILES
                         if files.endswith(".csv"):
                             filenames.append(files)
-                    
+
                     for stuff in filenames:
                         with open(stuff, "r") as file:
                             reader = csv.reader(file)
@@ -415,7 +422,7 @@ if __name__ == "__main__":
                                         matchedrecord.append(record)
                                 except IndexError:
                                     pass
-                    
+
                     if userinput.lower() == "s":
                         print("_".center(66, "_"))
                         sortDatabase(data, values)
@@ -429,7 +436,7 @@ if __name__ == "__main__":
                             print("# Search Result Within All Databases #".center(66, "="))
                             print("")
                             print(tabulate(matchedrecord, headers=headers, tablefmt="pipe"))
-                            print("") 
+                            print("")
 
 
             ## MAIN FILE SEARCH ##
@@ -470,7 +477,7 @@ if __name__ == "__main__":
                             if len(data) == 0:
                                 print("# Empty Database #".center(66, "="))
                                 break
-                            
+
                             ## LOOPS THROUGH EVERY ITEM WITHIN RECORDS IN DATABASE AND FINDS MATCHING KEYWORD/VALUE ##
                             while True:
                                 userinput = input(f"Input Keyword/Value. [Currently In {filename}] [.letmeout] Quit\n")
@@ -488,7 +495,7 @@ if __name__ == "__main__":
                                     for item in record:
                                         if item == userinput:
                                             matchedrecord.append(record)
-                                
+
                                 if len(matchedrecord) == 0:
                                     print("No Matching Results.")
                                     print("_".center(66, "_"))
@@ -499,13 +506,13 @@ if __name__ == "__main__":
                                             values.append(int(matchedrecord[i][2]))
                                         else:
                                             values.append(-int(matchedrecord[i][2]))
-                                    
+
                                     print(values)
                                     print("# Search Results #".center(66, "="))
                                     print("")
                                     print(tabulate(matchedrecord, headers=headers, tablefmt="pipe"))
                                     userinput = input(f"\n\033[4m Total Spent. { sum(values) }\033[24m ____________ [S] Sort [Press Enter To Quit.]  ")
-                                    
+
                                     if userinput.lower() == "s":
                                         sortDatabase(matchedrecord, values)
                                     print("")
@@ -513,7 +520,7 @@ if __name__ == "__main__":
                             print("")
                             print("# File Not Found #".center(66, "="))
 
-                        
+
 
 
 
