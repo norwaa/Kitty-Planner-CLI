@@ -32,6 +32,41 @@ if __name__ == "__main__":
         os.chdir(os.getcwd()+"/goober")
 
 
+    ## INPUT TYPE ##
+    def inputType():
+        pass
+
+
+    ## INPUT DESCRIPTION ##
+    def inputDescription():
+        pass
+
+
+    ## INPUT ACCOUNT ##
+    def inputAccount():
+        pass
+
+
+    ## INPUT DATE ##
+    def inputDate():
+        while True:
+            userinput = input("Enter Date. [FORMAT YYYY.MM.DD [1678 - 2261]] [.letmeout] Quit\n\n")
+            if letmeout(userinput) == True:
+                return "Quit"
+
+            if validate(userinput) == True:
+                print("_".center(66, "_"))
+                new_table.append(userinput)
+                break
+            print("\nInvalid Date.")
+            print("_".center(66, "_"))
+        return
+    
+    
+    ## INPUT CATAGORY ##
+    def inputCatagory():
+        pass
+        
 
     ## DISPLAY ADDED RECORDS ##
     def previewEntry(budget_planner):
@@ -135,7 +170,7 @@ if __name__ == "__main__":
 
             ## ENTER DATE ##
             while True:
-                userinput = input("Enter Date. [FORMAT YYYY.MM.DD (1678-2261)] [.letmeout] Quit\n\n")
+                userinput = input("Enter Date. [FORMAT YYYY.MM.DD [1678 - 2261]] [.letmeout] Quit\n\n")
                 if letmeout(userinput) == True:
                     return("Quit")
 
@@ -533,15 +568,15 @@ if __name__ == "__main__":
         ## EDIT DATABASE ##
         def editDatabase():
 
-            ## DELETE ROW ##
-            def deleteRow():
+            ## EDIT ROW ##
+            def editrow(row, columnindex, action):
+                print(row[columnindex])
+                if row[columnindex] in ["Income", "Expenses"]:
+                    print("it is indeed income or expenses")
+                    
+                print("")
+                print("EDIT ROW FUNCTION ENDED")
                 pass
-
-
-            ## ADD ROW ##
-            def editRow():
-                pass
-
 
             while True:
                 print("")
@@ -554,63 +589,56 @@ if __name__ == "__main__":
                     return
                 print("")
 
-                if os.path.exists(userinput):       ## CHECKS WHETHER FILE EXISTS && GRABS ALL DATA FROM DATABASE
-                    data = []
-                    values = []
+                if os.path.exists(userinput):
+                    filename = userinput
+                    dummydata = []
+                    headers = ["Type","Description","Account","Date","Category"]
+                    #values = []
                     with open(userinput, "r") as file:
-                        obtainedheader = False
                         reader = csv.reader(file)
                         list_of_rows = list(reader)
+                        for i in range(1, len(list_of_rows)):
+                            dummydata.append(list_of_rows[i])
+                            #values.append(int(list_of_rows[i][2]))
 
-                        for i in range(len(list_of_rows)):
-                            if obtainedheader != True:
-                                headers = list_of_rows[i]
-                                obtainedheader = True
-                            else:
-                                data.append(list_of_rows[i])
-                                values.append(int(list_of_rows[i][2]))
-
-                    if len(data) == 0:
+                    if len(dummydata) == 0:
                         print("# Empty Database #".center(66, "="))
                     else:
                         print("")
                         print("# Loading CSV Data #".center(66, "_"))
                         print("")
-                        print(tabulate(data, headers=headers, tablefmt="pipe", showindex=True))         ## PRINTS TABLE
-                        
+                        print(tabulate(dummydata, headers=headers, tablefmt="pipe", showindex=True))
                         while True:
                             try:
-                                index = int(input("Input Row Index [FORMAT ##]  "))
-                                # print(tabulate(data[index], headers=(), tablefmt="pipe"))
-                                break
-                            except ValueError:
+                                rowindex = int(input("Input Row Index [FORMAT ##]  "))
+                                if rowindex < len(dummydata[rowindex]):
+                                    itemcounter = 0
+                                    for _ in dummydata[rowindex]:
+                                        itemcounter += 1
+                                        
+                                    row = dummydata[rowindex]
+                                    print(tabulate([dummydata[rowindex]], tablefmt="github"))
+                                    
+                                    try:
+                                        columnindex = int(input(f"Input Column Index. [0 - {itemcounter-1}]   "))
+                                        while True:
+                                            action = input("Input Column Action [E] Edit Column [D] Delete Column   ").lower()
+                                            if action in ["e", "d"]:
+                                                editrow(row, columnindex, action)
+                                                break
+                                            print("Invalid Input")
+                                    except ValueError:
+                                        pass
+                            except (ValueError, IndexError):
                                 print("Invalid Input")
                                 pass
-                            
-                            # try:
-                            #     print(userinput[1])
-                            #     print(userinput[0])
-                                # if userinput[1].lower() in ["a", "d"] and len(userinput) == 2:
-                                #    index = int(userinput[0])
-                                #    print(index, userinput[1])
-                                #    break
-                            # except IndexError:
-                            #    pass
-                            # except ValueError:
-                            #     pass
-
                         print("EDIT DATABASE ENDED")
-
-                            # if userinput.lower() == "q":
-                            #     return "Quit"
-                            # elif userinput.lower() == "r":
-                            #     print("")
-                            #     break
-
                 else:
                     print("")
                     print("# File Not Found #".center(66, "="))
-
+            return
+        
+        
         ## BROWSE MODE MAIN UI ##
         counter = 0
         for files in os.listdir(os.path.dirname(__file__)):         ## LIST ALL CSV EXTENSION FILES
@@ -663,6 +691,9 @@ if __name__ == "__main__":
         print("_".center(66, "_"))
         userinput = input("Waiting for input..  ")
         print("")
+
+        if userinput == "f":
+            inputDate()
 
         if userinput == "1":
             browseDatabase()
