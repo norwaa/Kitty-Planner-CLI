@@ -539,7 +539,7 @@ if __name__ == "__main__":
 
 
             ## ADD ROW ##
-            def addRow():
+            def editRow():
                 pass
 
 
@@ -577,23 +577,27 @@ if __name__ == "__main__":
                         print("# Loading CSV Data #".center(66, "_"))
                         print("")
                         print(tabulate(data, headers=headers, tablefmt="pipe", showindex=True))         ## PRINTS TABLE
+                        
                         while True:
                             try:
-                                userinput = input("Input Row Index And Action [FORMAT ## A/D]  ").split(" ")
+                                index = int(input("Input Row Index [FORMAT ##]  "))
+                                # print(tabulate(data[index], headers=(), tablefmt="pipe"))
+                                break
                             except ValueError:
+                                print("Invalid Input")
                                 pass
-                            try:
-                                print(userinput[1])
-                                print(userinput[0])
-                                if userinput[1].lower() in ["a", "d"] and len(userinput) == 2:
-                                    index = int(userinput[0])
-                                    print(index, userinput[1])
-                                    break
-                            except IndexError:
-                                pass
-                            except ValueError:
-                                pass
-                            print("Invalid Input")
+                            
+                            # try:
+                            #     print(userinput[1])
+                            #     print(userinput[0])
+                                # if userinput[1].lower() in ["a", "d"] and len(userinput) == 2:
+                                #    index = int(userinput[0])
+                                #    print(index, userinput[1])
+                                #    break
+                            # except IndexError:
+                            #    pass
+                            # except ValueError:
+                            #     pass
 
                         print("EDIT DATABASE ENDED")
 
