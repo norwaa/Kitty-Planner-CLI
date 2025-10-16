@@ -393,6 +393,15 @@ if __name__ == "__main__":
                 return
 
 
+            ## EDIT DATABASE ##
+            def editDatabase():
+                while True:
+                    while True:
+                        print("")
+                        print(tabulate(csvfiles, headers=["# Databases Found Within Directory ")
+                pass
+
+
             ## GLOBAL SEARCH ##
             def globalSearch():
                 while True:
@@ -482,7 +491,7 @@ if __name__ == "__main__":
                                 for i in range(1, len(list_of_rows)):
                                     data.append(list_of_rows[i])
                             except IndexError:
-                                pass
+                               pass
 
                             if len(data) == 0:
                                 print("# Empty Database #".center(66, "="))
@@ -530,6 +539,56 @@ if __name__ == "__main__":
                             print("# File Not Found #".center(66, "="))
 
 
+        ## EDIT DATABASE ##
+        def editDatabase():
+
+
+            
+            while True:
+                print("")
+                print(tabulate(csvfiles, headers=["# Databases Found Within Directory #".center(60, " ")], tablefmt="github"))
+                print("\nCurrently - Edit Mode.")
+                print("")
+                userinput = str(input("Input Filename. [FORMAT ######] [.letmeout] Quit\n")) + ".csv"
+                magicword = userinput.replace(".", "").lower()
+                if "letmeout" in magicword and userinput[0] == ".":     ## Triggers when csvname contains .letmeout
+                    return
+                print("")
+
+                if os.path.exists(userinput):       ## CHECKS WHETHER FILE EXISTS && GRABS ALL DATA FROM DATABASE
+                    data = []
+                    values = []
+                    with open(userinput, "r") as file:
+                        obtainedheader = False
+                        reader = csv.reader(file)
+                        list_of_rows = list(reader)
+
+                        for i in range(len(list_of_rows)):
+                            if obtainedheader != True:
+                                headers = list_of_rows[i]
+                                obtainedheader = True
+                            else:
+                                data.append(list_of_rows[i])
+                                values.append(int(list_of_rows[i][2]))
+                                
+                    if len(data) == 0:
+                        print("# Empty Database #".center(66, "="))
+                    else:
+                        print("")
+                        print("# Loading CSV Data #".center(66, "_"))
+                        print("")
+                        print(tabulate(data, headers=headers, tablefmt="pipe"))         ## PRINTS TABLE
+                        while True:
+                            userinput = input("  ")          ## F STRINGS, ANSI ESCAPE CODES
+                            if userinput.lower() == "q":
+                                return "Quit"
+                            elif userinput.lower() == "r":
+                                print("")
+                                break
+
+                else:
+                    print("")
+                    print("# File Not Found #".center(66, "="))
 
         ## BROWSE MODE MAIN UI ##
         counter = 0
@@ -547,7 +606,7 @@ if __name__ == "__main__":
             print(tabulate(csvfiles, headers=["# Databases Found Within Directory #".center(60, " ")], tablefmt="github"))
             print("\nCurrently - Overview Mode.")
             print("")
-            userinput = input("[L] Load Database [D] Delete Database [S] Search Database \n[.letmeout] Quit\n")
+            userinput = input("[L] Load Database [D] Delete Database [S] Search Database \n[E] Edit Database [.letmeout] Quit\n")
             magicword = userinput.replace(".", "").lower()
             if userinput.lower() == "l":
                 print("=".center(66, "="))
