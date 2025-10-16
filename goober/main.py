@@ -20,7 +20,7 @@ if __name__ == "__main__":
     except ModuleNotFoundError:
         print("\n!! Pyfiglet module is not installed. Please install by running 'pip install pyfiglet' within terminal. !!\n")
         exit()
-    
+
     print("")
     print("")
     print(pyfiglet.figlet_format("ARKY", font="alligator", justify="center", width=66))         ## STARTUP ASCII ART
@@ -118,7 +118,7 @@ if __name__ == "__main__":
                 userinput = input("Enter Account. [.letmeout] Quit\n\n")
                 if letmeout(userinput) == True:
                     return("Quit")
-                
+
                 try:
                     if userinput.isdigit() == True:
                         if new_table[0] == "Income":
@@ -264,7 +264,7 @@ if __name__ == "__main__":
                             else:
                                 data.append(list_of_rows[i])
                                 values.append(int(list_of_rows[i][2]))
-                                
+
                     if len(data) == 0:
                         print("# Empty Database #".center(66, "="))
                     else:
@@ -308,7 +308,7 @@ if __name__ == "__main__":
                                 for name in item:
                                     if name == userinput:
                                         csvfiles.remove(item)
-                                        
+
                             os.remove(userinput)
                             print("# Database Removed #".center(66, "="))
                             break
@@ -376,30 +376,21 @@ if __name__ == "__main__":
                                 return False
                             print("")
                             print("Invalid Input.")
-                
+
                 sorted_df = df.sort_values(by=sortby(), ascending=asc_des())
                 if sortingdate == True:
                     sorted_df["Date"] = sorted_df["Date"].dt.strftime('%Y.%m.%d')
-                
+
                 values = []
                 for i in range(0, len(data)):
                     values.append(int(data[i][2]))
-                
+
                 print("")
                 print(f"# Sorted Records By {mode} ({order}) Within Directory #".center(66, "="))
                 print("")
                 print(tabulate(sorted_df, headers=["Type","Description","Account","Date","Category"], tablefmt="pipe", showindex=False))
                 userinput = input(f"\n\033[4m Total Spent. { sum(values) }\033[24m ___________________ [Press Enter To Quit.]  ")          ## F STRINGS, ANSI ESCAPE CODES
                 return
-
-
-            ## EDIT DATABASE ##
-            def editDatabase():
-                while True:
-                    while True:
-                        print("")
-                        print(tabulate(csvfiles, headers=["# Databases Found Within Directory ")
-                pass
 
 
             ## GLOBAL SEARCH ##
@@ -423,7 +414,7 @@ if __name__ == "__main__":
                     values = []
                     matchedrecord = []
                     matchedvalues = []
-                    
+
                     for files in os.listdir(os.path.dirname(__file__)):         ## LIST ALL CSV EXTENSION FILES
                         if files.endswith(".csv"):
                             filenames.append(files)
@@ -441,7 +432,7 @@ if __name__ == "__main__":
                                 if item == userinput:
                                     matchedrecord.append(record)
                                     matchedvalues.append(int(record[2]))
-                                    
+
                     if userinput.lower() == "s":
                         sortDatabase(data, values)
                         print("")
@@ -455,7 +446,7 @@ if __name__ == "__main__":
                             print("# Search Result Within All Databases #".center(66, "="))
                             print("")
                             print(tabulate(matchedrecord, headers=headers, tablefmt="pipe"))
-                            userinput = input(f"\n\033[4m Total Spent. { sum(matchedvalues) }\033[24m ___________________ [Press Enter To Quit.]  ") 
+                            userinput = input(f"\n\033[4m Total Spent. { sum(matchedvalues) }\033[24m ___________________ [Press Enter To Quit.]  ")
                             print("")
 
 
@@ -512,14 +503,14 @@ if __name__ == "__main__":
 
                                 matchedrecord = []
                                 matchdvalues = []
-                                
+
                                 for record in data:
                                     for item in record:
                                         if item == userinput:
                                             record[2] = int(record[2])
                                             matchedrecord.append(record)
                                             matchdvalues.append(int(record[2]))
-                                            
+
                                 print(matchedrecord)
 
                                 if len(matchedrecord) == 0:
@@ -542,8 +533,16 @@ if __name__ == "__main__":
         ## EDIT DATABASE ##
         def editDatabase():
 
+            ## DELETE ROW ##
+            def deleteRow():
+                pass
 
-            
+
+            ## ADD ROW ##
+            def addRow():
+                pass
+
+
             while True:
                 print("")
                 print(tabulate(csvfiles, headers=["# Databases Found Within Directory #".center(60, " ")], tablefmt="github"))
@@ -570,21 +569,39 @@ if __name__ == "__main__":
                             else:
                                 data.append(list_of_rows[i])
                                 values.append(int(list_of_rows[i][2]))
-                                
+
                     if len(data) == 0:
                         print("# Empty Database #".center(66, "="))
                     else:
                         print("")
                         print("# Loading CSV Data #".center(66, "_"))
                         print("")
-                        print(tabulate(data, headers=headers, tablefmt="pipe"))         ## PRINTS TABLE
+                        print(tabulate(data, headers=headers, tablefmt="pipe", showindex=True))         ## PRINTS TABLE
                         while True:
-                            userinput = input("  ")          ## F STRINGS, ANSI ESCAPE CODES
-                            if userinput.lower() == "q":
-                                return "Quit"
-                            elif userinput.lower() == "r":
-                                print("")
-                                break
+                            try:
+                                userinput = input("Input Row Index And Action [FORMAT ## A/D]  ").split(" ")
+                            except ValueError:
+                                pass
+                            try:
+                                print(userinput[1])
+                                print(userinput[0])
+                                if userinput[1].lower() in ["a", "d"] and len(userinput) == 2:
+                                    index = int(userinput[0])
+                                    print(index, userinput[1])
+                                    break
+                            except IndexError:
+                                pass
+                            except ValueError:
+                                pass
+                            print("Invalid Input")
+
+                        print("EDIT DATABASE ENDED")
+
+                            # if userinput.lower() == "q":
+                            #     return "Quit"
+                            # elif userinput.lower() == "r":
+                            #     print("")
+                            #     break
 
                 else:
                     print("")
@@ -621,6 +638,9 @@ if __name__ == "__main__":
             if userinput.lower() == "s":
                 print("")
                 searchData()
+            if userinput.lower() == "e":
+                print("")
+                editDatabase()
             if "letmeout" in magicword and userinput[0] == ".":     ## Triggers when csvname contains .letmeout
                 return
 
@@ -639,7 +659,7 @@ if __name__ == "__main__":
         print("_".center(66, "_"))
         userinput = input("Waiting for input..  ")
         print("")
-        
+
         if userinput == "1":
             browseDatabase()
         elif userinput == "2":
