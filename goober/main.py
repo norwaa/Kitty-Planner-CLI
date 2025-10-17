@@ -32,21 +32,6 @@ if __name__ == "__main__":
         os.chdir(os.getcwd()+"/goober")
 
 
-    ## INPUT TYPE ##
-    def inputType():
-        pass
-
-
-    ## INPUT DESCRIPTION ##
-    def inputDescription():
-        pass
-
-
-    ## INPUT ACCOUNT ##
-    def inputAccount():
-        pass
-
-
     ## INPUT DATE ##
     def inputDate():
         while True:
@@ -571,9 +556,50 @@ if __name__ == "__main__":
             ## EDIT ROW ##
             def editrow(row, columnindex, action):
                 print(row[columnindex])
+
+                def swapItem(userinput):
+                    if userinput == "i":
+                        return "Income"
+                    if userinput == "e":
+                        return "Expenses"
+                    
+                    if userinput == "u":
+                        return "Utilities"
+                    if userinput == "t":
+                        return "Transport" 
+                    if userinput == "r":
+                        return "Rent"
+                    if userinput == "f": 
+                        return "Food"
+                    if userinput == "s":
+                        return "Shopping"
+                     
+                    
+                    
+                    
+                    
+                    return "Invalid" 
+                pass
+
                 if row[columnindex] in ["Income", "Expenses"]:
                     print("it is indeed income or expenses")
-                    
+                    if action == "d":
+                        dummydata.pop(rowindex)
+                        print(dummydata)
+
+                    if action == "e":
+                        print("Editing Income/Expenses")
+                        while True:
+                            userinput = input("Input New Value. [I] Income [E] Expenses   ").lower()       
+                            if swapItem(userinput) != "Invalid":
+                                row[columnindex] = swapItem(userinput)
+                                print("")
+                                print(tabulate([row], tablefmt="github"))
+                                break
+                            else:
+                                print("Invalid Input")
+                        pass
+
                 print("")
                 print("EDIT ROW FUNCTION ENDED")
                 pass
@@ -632,7 +658,6 @@ if __name__ == "__main__":
                             except (ValueError, IndexError):
                                 print("Invalid Input")
                                 pass
-                        print("EDIT DATABASE ENDED")
                 else:
                     print("")
                     print("# File Not Found #".center(66, "="))
