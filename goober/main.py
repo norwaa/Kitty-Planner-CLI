@@ -23,43 +23,105 @@ if __name__ == "__main__":
 
     print("")
     print("")
-    print(pyfiglet.figlet_format("ARKY", font="alligator", justify="center", width=66))         ## STARTUP ASCII ART
-
-    #userinput = ""
-    budget_planner = [["Type","Description","Account","Date","Category"]]
+    print(pyfiglet.figlet_format("kitty", font="alligator", justify="center", width=68))         ## STARTUP ASCII ART
 
     if os.getcwd() != os.path.dirname(__file__):
         os.chdir(os.getcwd()+"/goober")
     
-    
+    tempDatabase = [["Type","Description","Account","Date","Category"]]
     ## LOOKS FOR THE KEYWORD "".LETMEOUT" ON EVERY INPUT ##
     def letmeout(userinput):
-        magicword = userinput.replace(".", "").lower()
-        if "letmeout" in magicword and userinput[0] == "." and len(userinput) == 9:
+        if userinput.lower() in [".letmeout"]:
             return True
         return False
 
 
+    ## SORT DATABASE ##
+    def sortDatabase(data, values, location):
+        print("=".center(66, "="))
+        print("")
+        headers=["Type","Description","Account","Date","Category"]
+        sortingdate = False
+        mode = ""
+        df = pd.DataFrame(data, columns=headers)
+
+        ## BY ACCOUNT OR DATE OR CATEGORY ##
+        def sortby():
+            nonlocal mode
+            nonlocal sortingdate
+            while True:
+                userinput = input("Sort By? [T] Type [A] Account [D] Date [C] Category   ")
+                print("")
+                if userinput.lower() == "a":
+                    mode = "Account"
+                    return mode
+                elif userinput.lower() == "d":
+                    sortingdate = True
+                    df["Date"] = pd.to_datetime(df["Date"], format="%Y.%m.%d")
+                    mode = "Date"
+                    return mode
+                elif userinput.lower() == "c":
+                    mode = "Category"
+                    return mode
+                elif userinput.lower() == "t":
+                    mode = "Type"
+                    return mode
+                print("")
+                print("Invalid Input.")
+
+        ## ASCENDING OR DESCENDING ##
+        def asc_des():
+            global order
+            while True:
+                userinput = input("Ascending/Descending? [A][D]   ")
+                print("")
+                if userinput.lower() == "a":
+                    order = "Ascending"
+                    return True
+                if userinput.lower() == "d":
+                    order = "Descending"
+                    return False
+                print("")
+                print("Invalid Input.")
+
+        sorted_df = df.sort_values(by=sortby(), ascending=asc_des())
+        if sortingdate == True:
+            sorted_df["Date"] = sorted_df["Date"].dt.strftime("%Y.%m.%d")
+
+        values = []
+        for i in range(0, len(data)):
+            values.append(int(data[i][2]))
+
+        print(f"# Sorted Records By {mode} [{order}] Within {location} #".center(66, "="))
+        print("")
+        print(tabulate(sorted_df, headers=["Type","Description","Account","Date","Category"], tablefmt="pipe", showindex=False))
+        userinput = input(f"\n\033[4m Total Spent. { sum(values) }\033[24m ___________________ [Press Enter To Quit.]  ")          ## F STRINGS, ANSI ESCAPE CODES
+        return
+    
+    
     ## DISPLAY ADDED RECORDS ##
-    def previewEntry(budget_planner):
-        headers = budget_planner[0]
+    def previewEntry(tempDatabase):
+        headers = tempDatabase[0]
         data = []
         values = []
-        for i in range(1, len(budget_planner)):
-            data.append(budget_planner[i])
-            print(budget_planner[i][0])
-
-            values.append(int(budget_planner[i][2]))
+        for i in range(1, len(tempDatabase)):
+            tempDatabase[i][2] = int(tempDatabase[i][2])
+            data.append(tempDatabase[i])
+            values.append(tempDatabase[i][2])
 
         print("# Database Preview #".center(66, "_"))
         print("")
         print(tabulate(data, headers=headers, tablefmt="pipe"))         ## PRINTS TABLE
         while True:
-            userinput = input(f"\n\033[4m Monthly Spent. { sum(values) }\033[24m ________________ [Press Enter To Quit.]  ")          ## F STRINGS, ANSI ESCAPE CODES
+            userinput = input(f"\n\033[4m Monthly Spent. { sum(values) }\033[24m _______________ [S] Sort [Press Enter To Quit.]  ").lower()        ## F STRINGS, ANSI ESCAPE CODES
+            if userinput == "s":
+                print("")
+                sortDatabase(data, values, "Database")
+                return
             return
 
     ## ADD NEW RECORDS TO NEW CSV FILE ##
-    def addEntry():
+    def addDatabase():
 
         ## VALIDATES DATA ##
         def validate(userinput):
@@ -95,9 +157,11 @@ if __name__ == "__main__":
 
         while True:
             new_table = []
+            
             ## ENTER TYPE ##
             while True:
-                userinput = input("Enter Entry Type. [I] Income [E] Expenses [.letmeout] Quit\n\n")
+                userinput = input("Enter Entry Type. [I] Income [E] Expenses [.letmeout] Quit   ")
+                print("")
                 if letmeout(userinput) == True:
                     return("Quit")
                 if assigndata(userinput, False) != "Invalid":
@@ -116,7 +180,8 @@ if __name__ == "__main__":
 
             ## ENTER ACCOUNT ##
             while True:
-                userinput = input("Enter Account. [.letmeout] Quit\n\n")
+                userinput = input("Enter Account. [.letmeout] Quit   ")
+                print("")
                 if letmeout(userinput) == True:
                     return("Quit")
 
@@ -137,6 +202,7 @@ if __name__ == "__main__":
             ## ENTER DATE ##
             while True:
                 userinput = input("Enter Date. [FORMAT YYYY.MM.DD [1678 - 2261]] [.letmeout] Quit\n\n")
+                print("")
                 if letmeout(userinput) == True:
                     return("Quit")
 
@@ -149,7 +215,8 @@ if __name__ == "__main__":
 
             ## ENTER CATAGORY ##
             while True:
-                userinput = input("Enter Catagory. [U] Utilities [T] Transport [R] Rent [F] Food [S] Shopping \n[.letmeout] Quit\n\n")
+                userinput = input("Enter Catagory. [U] Utilities [T] Transport [R] Rent [F] Food \n[S] Shopping [.letmeout] Quit   ")
+                print("")
                 if letmeout(userinput) == True:
                     return("Quit")
                 if assigndata(userinput, True) != "Invalid":
@@ -165,8 +232,9 @@ if __name__ == "__main__":
             print(tabulate([new_table], ["Type","Description","Account","Date","Category"], tablefmt="pipe"))
             while True:
                 userinput = input("\nConfirm Entries? [Y] Yes [N] No   ")
+                print("")
                 if userinput.lower() == "y":
-                    budget_planner.append(new_table)
+                    tempDatabase.append(new_table)
                     while True:
                         userinput = input("Add Another Entry? [Y] Yes [N] No   ")
                         print("")
@@ -175,8 +243,8 @@ if __name__ == "__main__":
                                 print("=".center(66, "="))
                                 return
                             elif userinput.lower() == "n":
+                                print("# Database Created #".center(66, "_"))
                                 print("")
-                                print("# Database Created #".center(66, "="))
                                 return "Quit"
                             break
                         print("Invalid Input.")
@@ -191,142 +259,77 @@ if __name__ == "__main__":
 
 
     ## EXPORT CSV ##
-    def exportcsv(budget_planner):
+    def exportcsv(tempDatabase):
         while True:
-            userinput = input("Input Filename. \n[.letmeout] Quit\n\n") + ".csv"
+            userinput = input("Input Filename. [.letmeout] Quit\n\n")
+            print("")
             if letmeout(userinput) == True:
                 return
-            print("")
 
             while True:
-                changestate = input("Confirm Filename? [Y] Yes [N] No   ")
-                if changestate == "Y" or changestate == "y":
-                    if os.path.exists(userinput):       ## CHECK WHETHER FILE EXISTS
-                        while True:
-                            changestate = input("Filename Exists. [O] Overwrite [P] Push   ")
-                            if changestate ==  "O" or changestate == "o":
-                                with open(userinput, "w", newline="") as file:
-                                    writer = csv.writer(file)
-                                    writer.writerows(budget_planner)
-
-                            if changestate == "P" or changestate == "p":
-                                with open(userinput, "a", newline="") as file:
-                                    writer = csv.writer(file)
-                                    writer.writerows(budget_planner)
-
-                    else:
-                        with open(userinput, "w", newline="") as file:
-                            writer = csv.writer(file)
-                            writer.writerows(budget_planner)
-                        print("")
-                        print("# File Exported #".center(66,"_"))
-                    return
-                if changestate == "N" or changestate == "n":
+                if userinput == "":
+                    print("Filename Is Missing.")
                     print("_".center(66, "_"))
                     break
+                else:
+                    userinput = userinput+".csv"
+                    confirm = input("Confirm Filename? [Y] Yes [N] No   ").lower()
+                    print("")
+                    if confirm == "y":
+                        if os.path.exists(userinput):       ## CHECKS WHETHER FILE EXISTS
+                            while True:
+                                confirm = input("Filename Exists. [O] Overwrite [P] Push   ").lower()
+                                print("")
+                                if confirm == "o":
+                                    with open(userinput, "w", newline="") as file:
+                                        writer = csv.writer(file)
+                                        writer.writerows(tempDatabase)
 
+                                if changestate == "p":
+                                    with open(userinput, "a", newline="") as file:
+                                        writer = csv.writer(file)
+                                        writer.writerows(tempDatabase)
+
+                        else:
+                            with open(userinput, "w", newline="") as file:
+                                writer = csv.writer(file)
+                                writer.writerows(tempDatabase)
+                            print("# File Exported #".center(66,"_"))
+                        return
+                    if confirm == "n":
+                        print("_".center(66, "_"))
+                        break            
 
 
     ## BROWSING DIRECTORY CSVS ##
     def browseDatabase():
         csvfiles = []
 
-         ## SORT DATABASE ##
-        def sortDatabase(data, values, location):
-            print("_".center(66, "_"))
-            headers=["Type","Description","Account","Date","Category"]
-            sortingdate = False
-            mode = ""
-            df = pd.DataFrame(data, columns=headers)
-
-            ## BY ACCOUNT OR DATE OR CATEGORY ##
-            def sortby():
-                nonlocal mode
-                nonlocal sortingdate
-                while True:
-                    userinput = input("Sort By? [T] Type [A] Account [D] Date [C] Category   ")
-                    if userinput.lower() == "a":
-                        mode = "Account"
-                        return mode
-                    elif userinput.lower() == "d":
-                        sortingdate = True
-                        df["Date"] = pd.to_datetime(df["Date"], format='%Y.%m.%d')
-                        mode = "Date"
-                        return mode
-                    elif userinput.lower() == "c":
-                        mode = "Category"
-                        return mode
-                    elif userinput.lower() == "t":
-                        mode = "Type"
-                        return mode
-                    print("")
-                    print("Invalid Input.")
-
-            ## ASCENDING OR DESCENDING ##
-            def asc_des():
-                global order
-                while True:
-                        userinput = input("Ascending/Descending? [A][D]   ")
-                        if userinput.lower() == "a":
-                            order = "Ascending"
-                            return True
-                        if userinput.lower() == "d":
-                            order = "Descending"
-                            return False
-                        print("")
-                        print("Invalid Input.")
-
-            sorted_df = df.sort_values(by=sortby(), ascending=asc_des())
-            if sortingdate == True:
-                sorted_df["Date"] = sorted_df["Date"].dt.strftime('%Y.%m.%d')
-
-            values = []
-            for i in range(0, len(data)):
-                values.append(int(data[i][2]))
-
-            print("")
-            print(f"# Sorted Records By {mode} ({order}) Within {location} #".center(66, "="))
-            print("")
-            print(tabulate(sorted_df, headers=["Type","Description","Account","Date","Category"], tablefmt="pipe", showindex=False))
-            userinput = input(f"\n\033[4m Total Spent. { sum(values) }\033[24m ___________________ [Press Enter To Quit.]  ")          ## F STRINGS, ANSI ESCAPE CODES
-            print("")
-            print("=".center(66, "="))
-            return
-
-
          ## LOADING MODE ##
         def loadBudgetData():
+            print("=".center(66, "="))
             while True:
                 print("")
                 print(tabulate(csvfiles, headers=["# Databases Found Within Directory #".center(60, " ")], tablefmt="github"))
                 print("\nCurrently - Loading Mode")
                 print("")
-                userinput = str(input("Input Filename. [FORMAT ######]  [.letmeout] Quit\n")) + ".csv"
+                userinput = str(input("Input Filename. [FORMAT ######]  [.letmeout] Quit\n"))
                 if letmeout(userinput) == True:
                     return "Quit"
                 
-                filename = userinput
-                # try:
-                #     int(userinput)
-                # except ValueError:
-                #     str(userinput)
-
+                filename = userinput+".csv"
+                headers = ["Type","Description","Account","Date","Category"]
                 data = []
                 values = []
 
-                if os.path.exists(userinput):       ## CHECKS WHETHER FILE EXISTS && GRABS ALL DATA FROM DATABASE
-                    with open(userinput, "r") as file:
-                        obtainedheader = False
+                if os.path.exists(filename):       ## CHECKS WHETHER FILE EXISTS && GRABS ALL DATA FROM DATABASE
+                    with open(filename, "r") as file:
                         reader = csv.reader(file)
                         list_of_rows = list(reader)
 
-                        for i in range(len(list_of_rows)):
-                            if obtainedheader != True:
-                                headers = list_of_rows[i]
-                                obtainedheader = True
-                            else:
-                                data.append(list_of_rows[i])
-                                values.append(int(list_of_rows[i][2]))
+                        for i in range(1, len(list_of_rows)):
+                            data.append(list_of_rows[i])
+                            values.append(int(list_of_rows[i][2]))
 
                     if len(data) == 0:
                         print("# Empty Database #".center(66, "="))
@@ -336,14 +339,15 @@ if __name__ == "__main__":
                         print("")
                         print(tabulate(data, headers=headers, tablefmt="pipe"))         ## PRINTS TABLE
                         while True:
-                            userinput = input(f"\n\033[4m Monthly Spent. { sum(values) }\033[24m _____________[S] Sort [R] Return [Q] Quit  ") .lower()         ## F STRINGS, ANSI ESCAPE CODES
+                            userinput = input(f"\n\033[4m Monthly Spent. { sum(values) }\033[24m ____________ [S] Sort [R] Return [Q] Quit  ") .lower()         ## F STRINGS, ANSI ESCAPE CODES
+                            print("")
                             if userinput == "s":
                                 sortDatabase(data, values, filename)
+                                print("")
                                 return
                             elif userinput == "q":
                                 return "Quit"
                             elif userinput == "r":
-                                print("")
                                 break
                             break
                 else:
@@ -367,9 +371,9 @@ if __name__ == "__main__":
                 userinput = userinput + ".csv"
                 while True:
                     changestate = input("Confirm Filename? [DELETION CANNOT BE REVERTED.] [Y] Yes [N] No  ")
+                    print("")
                     if changestate == "Y" or changestate == "y":
                         if os.path.exists(userinput):       ## CHECK WHETHER FILE EXISTS
-                            print("")
                             for item in csvfiles:
                                 for name in item:
                                     if name == userinput:
@@ -379,12 +383,13 @@ if __name__ == "__main__":
                             print("# Database Removed #".center(66, "="))
                             break
                         else:
-                            print("")
                             print("# File Not Found #".center(66, "="))
                             break
                     if changestate == "N" or changestate == "n":
                         print("_".center(66, "_"))
                         break
+                    print("Invalid Input.")
+                    print("")
 
 
 
@@ -394,17 +399,14 @@ if __name__ == "__main__":
             ## GLOBAL SEARCH ##
             def globalSearch():
                 while True:
-                    userinput = input("Input Keyword/Value. [D] Disable Global Search [S] Sort Directory \n")
+                    print("=".center(66, "="))
+                    print("")
+                    userinput = input("Input Keyword/Value. [D] Disable Global Search [S] Sort Directory \n\n")
                     print("")
                     if userinput.lower() == "d":
                         print("=".center(66, "="))
                         return
-
-                    try:
-                        int(userinput)
-                    except ValueError:
-                        str(userinput)
-
+                    
                     filenames = []
                     headers = ["Type","Description","Account","Date","Category"]
                     data = []
@@ -421,27 +423,33 @@ if __name__ == "__main__":
                             reader = csv.reader(file)
                             list_of_rows = list(reader)
                             for i in range(1, len(list_of_rows)):
+                                    list_of_rows[i][2] = int(list_of_rows[i][2])
                                     data.append(list_of_rows[i])
-                                    values.append(int(list_of_rows[i][2]))
+                                    values.append(list_of_rows[i][2])
 
                         for record in list_of_rows:
                             for item in record:
-                                if item == userinput:
+                                if str(item) == userinput:
+                                    try:
+                                        matchedvalues.append(int(record[2]))
+                                    except ValueError:
+                                        break
                                     matchedrecord.append(record)
-                                    matchedvalues.append(int(record[2]))
 
                     if userinput.lower() == "s":
                         sortDatabase(data, values, "Directory")
+                        print("")
                     else:
                         if len(matchedrecord) == 0:
-                            print("")
                             print("No Matching Results.")
-                            print("")
                         else:
                             print("# Search Result Within All Directory #".center(66, "="))
                             print("")
                             print(tabulate(matchedrecord, headers=headers, tablefmt="pipe"))
-                            userinput = input(f"\n\033[4m Total Spent. { sum(matchedvalues) }\033[24m ___________________ [Press Enter To Quit.]  ")
+                            userinput = input(f"\n\033[4m Total Spent. { sum(matchedvalues) }\033[24m ______________ [S] Sort [Press Enter To Quit.]  ").lower()
+                            if userinput == "s":
+                                print("")
+                                sortDatabase(matchedrecord, matchedvalues, "Directory")
                             print("")
 
 
@@ -457,11 +465,11 @@ if __name__ == "__main__":
 
                     userinput = str(input("Input Filename. [FORMAT ######] [G] Global Search [.letmeout] Quit\n"))
                     if letmeout(userinput) == True:
+                        print("")
                         return
                     print("")
 
                     if userinput.lower() == "g":
-                        print("_".center(66, "_"))
                         globalSearch()
                         break
                     else:
@@ -487,23 +495,20 @@ if __name__ == "__main__":
 
                             ## LOOPS THROUGH EVERY ITEM WITHIN RECORDS IN DATABASE AND FINDS MATCHING KEYWORD/VALUE ##
                             while True:
-                                print("_".center(66, "_"))
-                                userinput = input(f"Input Keyword/Value. [Currently In {filename}] [.letmeout] Quit\n")
+                                print("=".center(66, "="))
+                                print("")
+                                userinput = str(input(f"Input Keyword/Value. [Currently In {filename}] [.letmeout] Quit \n\n"))
                                 print("")
                                 if letmeout(userinput) == True:
                                     print("=".center(66, "="))
                                     break
-                                try:
-                                    int(userinput)
-                                except ValueError:
-                                    str(userinput)
 
                                 matchedrecord = []
                                 matchdvalues = []
 
                                 for record in data:
                                     for item in record:
-                                        if item == userinput:
+                                        if str(item) == userinput:
                                             record[2] = int(record[2])
                                             matchedrecord.append(record)
                                             matchdvalues.append(int(record[2]))
@@ -517,7 +522,8 @@ if __name__ == "__main__":
                                     userinput = input(f"\n\033[4m Total Spent. { sum(matchdvalues) }\033[24m __________ [S] Sort [Press Enter To Quit.]  ")
 
                                     if userinput.lower() == "s":
-                                        sortDatabase(matchedrecord, matchdvalues)
+                                        print("")
+                                        sortDatabase(matchedrecord, matchdvalues, filename)
                                     print("")
                         else:
                             print("# File Not Found #".center(66, "="))
@@ -525,7 +531,6 @@ if __name__ == "__main__":
 
         ## EDIT DATABASE ##
         def editDatabase():
-            print("=".center(66, "="))
             newdata = [["Type","Description","Account","Date","Category"]]
             editstate = False
             
@@ -566,59 +571,65 @@ if __name__ == "__main__":
                 ## IF TYPE COLUMN ##
                 if columnindex == 0:
                     while True:
-                        userinput = input("Enter New Entry Type. [I] Income [E] Expenses [.letmeout] Quit\n\n").lower()
+                        userinput = input("Enter New Entry Type. [I] Income [E] Expenses [.letmeout] Quit   ").lower()
+                        if letmeout(userinput) == True:
+                            return row
                         if swapItem(userinput) != "Invalid":
                             row[columnindex] = swapItem(userinput)
                             break
                         else:
+                            print("")
                             print("Invalid Input")
                             print("")
                 
                 ## IF DESCRIPTION COLUMN ##
                 if columnindex == 1:
                     while True:
-                        userinput = input("Enter New Description. [Enter To Leave Blank] [.letmeout] Quit\n\n")
+                        userinput = input("Enter New Description. [Enter To Leave Blank] [.letmeout] Quit\n")
                         if letmeout(userinput) == True:
-                            return
+                            return row
                         row[columnindex] = userinput
                         break
                             
                 ## IF ACCOUNT COLUMN ##
                 if columnindex == 2:
                     while True:
-                        userinput = input("Enter New Account. [.letmeout] Quit\n\n")
+                        userinput = input("Enter New Account. [.letmeout] Quit   ")
                         if letmeout(userinput) == True:
-                            return
+                            return row
                         if swapItem(userinput) != "Invalid":
                             row[columnindex] = swapItem(userinput)
                             break
                         else:
+                            print("")
                             print("Invalid Input")
                             print("")
 
                 ## IF DATE COLUMN ##
                 if columnindex == 3:
                         while True:
-                            userinput = input("Enter New Date. [FORMAT YYYY.MM.DD [1678 - 2261]] [.letmeout] Quit\n\n")
+                            userinput = input("Enter New Date. [FORMAT YYYY.MM.DD [1678 - 2261]] [.letmeout] Quit   ")
                             if letmeout(userinput) == True:
-                                return
+                                return row
                             if swapItem(userinput) != "Invalid" and len(userinput) == 10:
                                 row[columnindex] = swapItem(userinput)
                                 break
                             else:
+                                print("")
                                 print("Invalid Input")
                                 print("")
                             
                 ## IF CATAGORY COLUMN ##
                 if columnindex == 4:
                     while True:
-                        userinput = input("Enter New Catagory. [U] Utilities [T] Transport [R] Rent [F] Food [S] Shopping \n[.letmeout] Quit\n\n").lower()
+                        userinput = input("Enter New Catagory. [U] Utilities [T] Transport [R] Rent [F] Food [S] Shopping \n[.letmeout] Quit   ").lower()
                         if letmeout(userinput) == True:
-                            return
+                            return row
                         if swapItem(userinput) != "Invalid":
                             row[columnindex] = swapItem(userinput)
                             break
                         else:
+                            print("")
                             print("Invalid Input")
                             print("")
                 
@@ -628,18 +639,20 @@ if __name__ == "__main__":
                 print(tabulate([row], headers="keys", tablefmt="github", colalign=("center", "center", "center", "center", "center")))
                 return row
 
+            print("=".center(66, "="))
             while True:
                 print("")
                 print(tabulate(csvfiles, headers=["# Databases Found Within Directory #".center(60, " ")], tablefmt="github"))
                 print("\nCurrently - Edit Mode.")
                 print("")
-                userinput = str(input("Input Filename. [FORMAT ######] [.letmeout] Quit\n")) + ".csv"
+                userinput = str(input("Input Filename. [FORMAT ######] [.letmeout] Quit\n"))
                 if letmeout(userinput) == True:
                     return
                 print("")
 
+                userinput = userinput+".csv"
                 if os.path.exists(userinput):
-                    filename = userinput
+                    # filename = userinput
                     dummydata = []
 
                     with open(userinput, "r") as file:
@@ -653,7 +666,7 @@ if __name__ == "__main__":
                     else:
                         while True:
                             try:
-                                print(f"# {filename} Database Preview #".center(66, "_"))
+                                print(f"# {userinput} Database Preview #".center(66, "_"))
                                 print("")
                                 print(tabulate(dummydata, headers=["Type","Description","Account","Date","Category"], tablefmt="pipe", showindex=True))
                                 print("")
@@ -661,6 +674,7 @@ if __name__ == "__main__":
                                 rowindex = input(f"Input Row Index [0 - {len(dummydata)-1}] [.letmeout] Quit   ")
                                 if letmeout(rowindex) == True:
                                     print("")
+                                    print("=".center(66, "="))
                                     break
                                 rowindex = int(rowindex)
                                 
@@ -685,33 +699,33 @@ if __name__ == "__main__":
                                             if letmeout(str(columnindex)) == True:
                                                 break
                                             if columnindex.lower() == "d":
-                                                dummydata.pop(rowindex)
-                                                editstate = True
-                                                break
-                                            
-                                            columnindex = int(columnindex)
-                                            if 0 <= columnindex <= 4 and isinstance(columnindex, int):
                                                 while True:
-                                                    try:
-                                                        action = input("Input Column Action [E] Edit Column [.letmeout] Quit   ").lower()
-                                                        print("")
-                                                        if letmeout(action) == True:
-                                                            print("_".center(66, "_"))
-                                                            break
-                                                        if action == "e":
-                                                            dummydata[rowindex] = editrow(row, columnindex)
-                                                            editstate = True
+                                                    confirm = input("Confirm Deletion? [Y] Yes [N] No   ").lower()
+                                                    print("")
+                                                    if confirm == "y":
+                                                        dummydata.pop(rowindex)
+                                                        editstate = True
+                                                    if confirm == "n":
+                                                        break
+                                                    print("Invalid Input.")
+                                                    print("")
+                                            else:
+                                                columnindex = int(columnindex)
+                                                if 0 <= columnindex <= 4 and isinstance(columnindex, int):
+                                                    while True:
+                                                        try:
+                                                            if dummydata[rowindex] != editrow(row, columnindex):
+                                                                dummydata[rowindex] = editrow(row, columnindex)
+                                                                editstate = True
                                                             print("")
                                                             break
-                                                        print("Invalid Input")
-                                                        print("")
-                                                    except ValueError:
-                                                        print("Invalid Input")
-                                                        print("")
-                                                        pass
-                                            else:
-                                                print("Invalid Input.")
-                                                print("")
+                                                        except ValueError:
+                                                            print("Invalid Input")
+                                                            print("")
+                                                            pass
+                                                else:
+                                                    print("Invalid Input.")
+                                                    print("")
                                         except ValueError:
                                             print("Invalid Input.")
                                             print("")
@@ -739,7 +753,6 @@ if __name__ == "__main__":
                                 print("Invalid Input.")
                                 print("")
                 else:
-                    print("")
                     print("# File Not Found #".center(66, "="))
                     
                     
@@ -764,12 +777,11 @@ if __name__ == "__main__":
             print(tabulate(csvfiles, headers=["# Databases Found Within Directory #".center(60, " ")], tablefmt="github"))
             print("\nCurrently - Overview Mode.")
             print("")
-            userinput = input("[L] Load [D] Delete [S] Search [E] Edit [.letmeout] Quit\n")
+            userinput = input("[L] Load [D] Delete [S] Search [E] Edit [.letmeout] Quit   ")
             print("")
             if letmeout(userinput) == True:
                 return
             if userinput.lower() == "l":
-                print("=".center(66, "="))
                 while True:
                     if loadBudgetData() == "Quit":
                         break
@@ -785,7 +797,7 @@ if __name__ == "__main__":
     ## MAIN UI ##
     while True:
         print("")
-        print("[ ARKY CLI BUDGET PLANNER ]".center(66, "="))
+        print("[ KITTY CLI BUDGET PLANNER ]".center(66, "="))
         print("_".center(66, "_"))
         print("")
         print("[1] Browse Database Library")
@@ -805,18 +817,17 @@ if __name__ == "__main__":
         elif userinput == "2":
             print("=".center(66, "="))
             print("")
-            previewEntry(budget_planner)
+            previewEntry(tempDatabase)
             pass
         elif userinput == "3":
             print("=".center(66, "="))
-            print("")
             while True:
-                if addEntry() == "Quit":
+                if addDatabase() == "Quit":
                     break
             pass
         elif userinput == "4":
             print("=".center(66, "="))
-            exportcsv(budget_planner)
+            exportcsv(tempDatabase)
             print("")
             pass
         elif userinput.lower() == "q":
