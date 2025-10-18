@@ -29,11 +29,15 @@ if __name__ == "__main__":
         os.chdir(os.getcwd()+"/goober")
     
     tempDatabase = [["Type","Description","Account","Date","Category"]]
+    
+    
+    
     ## LOOKS FOR THE KEYWORD "".LETMEOUT" ON EVERY INPUT ##
     def letmeout(userinput):
         if userinput.lower() in [".letmeout"]:
             return True
         return False
+
 
 
     ## SORT DATABASE ##
@@ -95,8 +99,9 @@ if __name__ == "__main__":
         print(f"# Sorted Records By {mode} [{order}] Within {location} #".center(66, "="))
         print("")
         print(tabulate(sorted_df, headers=["Type","Description","Account","Date","Category"], tablefmt="pipe", showindex=False))
-        userinput = input(f"\n\033[4m Total Spent. { sum(values) }\033[24m ___________________ [Press Enter To Quit.]  ")          ## F STRINGS, ANSI ESCAPE CODES
+        userinput = input(f"\n\033[4m Total Spent. { sum(values) }\033[24m ___________________ [Press Enter To Quit.]  ")
         return
+    
     
     
     ## DISPLAY ADDED RECORDS ##
@@ -111,14 +116,16 @@ if __name__ == "__main__":
 
         print("# Database Preview #".center(66, "_"))
         print("")
-        print(tabulate(data, headers=headers, tablefmt="pipe"))         ## PRINTS TABLE
+        print(tabulate(data, headers=headers, tablefmt="pipe"))
         while True:
-            userinput = input(f"\n\033[4m Monthly Spent. { sum(values) }\033[24m _______________ [S] Sort [Press Enter To Quit.]  ").lower()        ## F STRINGS, ANSI ESCAPE CODES
+            userinput = input(f"\n\033[4m Monthly Spent. { sum(values) }\033[24m _______________ [S] Sort [Press Enter To Quit.]  ").lower()
             if userinput == "s":
                 print("")
                 sortDatabase(data, values, "Database")
                 return
             return
+
+
 
     ## ADD NEW RECORDS TO NEW CSV FILE ##
     def addDatabase():
@@ -276,7 +283,7 @@ if __name__ == "__main__":
                     confirm = input("Confirm Filename? [Y] Yes [N] No   ").lower()
                     print("")
                     if confirm == "y":
-                        if os.path.exists(userinput):       ## CHECKS WHETHER FILE EXISTS
+                        if os.path.exists(userinput):
                             while True:
                                 confirm = input("Filename Exists. [O] Overwrite [P] Push   ").lower()
                                 print("")
@@ -322,7 +329,7 @@ if __name__ == "__main__":
                 data = []
                 values = []
 
-                if os.path.exists(filename):       ## CHECKS WHETHER FILE EXISTS && GRABS ALL DATA FROM DATABASE
+                if os.path.exists(filename):
                     with open(filename, "r") as file:
                         reader = csv.reader(file)
                         list_of_rows = list(reader)
@@ -337,9 +344,9 @@ if __name__ == "__main__":
                         print("")
                         print("# Loading CSV Data #".center(66, "_"))
                         print("")
-                        print(tabulate(data, headers=headers, tablefmt="pipe"))         ## PRINTS TABLE
+                        print(tabulate(data, headers=headers, tablefmt="pipe"))
                         while True:
-                            userinput = input(f"\n\033[4m Monthly Spent. { sum(values) }\033[24m ____________ [S] Sort [R] Return [Q] Quit  ") .lower()         ## F STRINGS, ANSI ESCAPE CODES
+                            userinput = input(f"\n\033[4m Monthly Spent. { sum(values) }\033[24m ____________ [S] Sort [R] Return [Q] Quit  ") .lower()
                             print("")
                             if userinput == "s":
                                 sortDatabase(data, values, filename)
@@ -414,7 +421,7 @@ if __name__ == "__main__":
                     matchedrecord = []
                     matchedvalues = []
 
-                    for files in os.listdir(os.path.dirname(__file__)):         ## LIST ALL CSV EXTENSION FILES
+                    for files in os.listdir(os.path.dirname(__file__)):
                         if files.endswith(".csv"):
                             filenames.append(files)
 
@@ -451,6 +458,7 @@ if __name__ == "__main__":
                                 print("")
                                 sortDatabase(matchedrecord, matchedvalues, "Directory")
                             print("")
+
 
 
             ## MAIN FILE SEARCH ##
@@ -527,6 +535,7 @@ if __name__ == "__main__":
                                     print("")
                         else:
                             print("# File Not Found #".center(66, "="))
+
 
 
         ## EDIT DATABASE ##
@@ -652,7 +661,6 @@ if __name__ == "__main__":
 
                 userinput = userinput+".csv"
                 if os.path.exists(userinput):
-                    # filename = userinput
                     dummydata = []
 
                     with open(userinput, "r") as file:
@@ -754,10 +762,8 @@ if __name__ == "__main__":
                                 print("")
                 else:
                     print("# File Not Found #".center(66, "="))
-                    
-                    
-
             return
+        
         
         
         ## BROWSE MODE MAIN UI ##
@@ -792,6 +798,7 @@ if __name__ == "__main__":
                 searchData()
             if userinput.lower() == "e":
                 print(tabulate(editDatabase(), tablefmt="pipe"))
+
 
 
     ## MAIN UI ##
