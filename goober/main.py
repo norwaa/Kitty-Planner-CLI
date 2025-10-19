@@ -28,7 +28,7 @@ if __name__ == "__main__":
     if os.getcwd() != os.path.dirname(__file__):
         os.chdir(os.getcwd()+"/goober")
     
-    tempDatabase = [["Type","Description","Account","Date","Category"]]
+    tempDatabase = []
     
     
     
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     
     ## DISPLAY ADDED RECORDS ##
     def previewEntry(tempDatabase):
-        headers = tempDatabase[0]
+        headers = ["Type","Description","Account","Date","Category"]
         data = []
         values = []
         for i in range(1, len(tempDatabase)):
@@ -118,7 +118,7 @@ if __name__ == "__main__":
         print("")
         print(tabulate(data, headers=headers, tablefmt="pipe"))
         while True:
-            userinput = input(f"\n\033[4m Monthly Spent. { sum(values) }\033[24m _______________ [S] Sort [Press Enter To Quit.]  ").lower()
+            userinput = input(f"\n\033[4m Total Spent. { sum(values) }\033[24m _______________ [S] Sort [Press Enter To Quit.]  ").lower()
             if userinput == "s":
                 print("")
                 sortDatabase(data, values, "Database")
@@ -220,9 +220,9 @@ if __name__ == "__main__":
                 print("\nInvalid Date.")
                 print("_".center(66, "_"))
 
-            ## ENTER CATAGORY ##
+            ## ENTER CATEGORY ##
             while True:
-                userinput = input("Enter Catagory. [U] Utilities [T] Transport [R] Rent [F] Food \n[S] Shopping [.letmeout] Quit   ")
+                userinput = input("Enter Category. [U] Utilities [T] Transport [R] Rent [F] Food \n[S] Shopping [.letmeout] Quit   ")
                 print("")
                 if letmeout(userinput) == True:
                     return("Quit")
@@ -289,16 +289,20 @@ if __name__ == "__main__":
                                 print("")
                                 if confirm == "o":
                                     with open(userinput, "w", newline="") as file:
+                                        tempDatabase.insert(0, ["Type","Description","Account","Date","Category"])
                                         writer = csv.writer(file)
                                         writer.writerows(tempDatabase)
+                                        return
 
-                                if changestate == "p":
+                                if confirm == "p":
                                     with open(userinput, "a", newline="") as file:
                                         writer = csv.writer(file)
                                         writer.writerows(tempDatabase)
+                                        return
 
                         else:
                             with open(userinput, "w", newline="") as file:
+                                tempDatabase.insert(0, ["Type","Description","Account","Date","Category"])
                                 writer = csv.writer(file)
                                 writer.writerows(tempDatabase)
                             print("# File Exported #".center(66,"_"))
@@ -346,7 +350,7 @@ if __name__ == "__main__":
                         print("")
                         print(tabulate(data, headers=headers, tablefmt="pipe"))
                         while True:
-                            userinput = input(f"\n\033[4m Monthly Spent. { sum(values) }\033[24m ____________ [S] Sort [R] Return [Q] Quit  ") .lower()
+                            userinput = input(f"\n\033[4m Total Spent. { sum(values) }\033[24m ____________ [S] Sort [R] Return [Q] Quit  ") .lower()
                             print("")
                             if userinput == "s":
                                 sortDatabase(data, values, filename)
@@ -377,10 +381,10 @@ if __name__ == "__main__":
                 
                 userinput = userinput + ".csv"
                 while True:
-                    changestate = input("Confirm Filename? [DELETION CANNOT BE REVERTED.] [Y] Yes [N] No  ")
+                    confirm = input("Confirm Filename? [DELETION CANNOT BE REVERTED.] [Y] Yes [N] No  ").lower()
                     print("")
-                    if changestate == "Y" or changestate == "y":
-                        if os.path.exists(userinput):       ## CHECK WHETHER FILE EXISTS
+                    if confirm == "y":
+                        if os.path.exists(userinput):
                             for item in csvfiles:
                                 for name in item:
                                     if name == userinput:
@@ -392,7 +396,7 @@ if __name__ == "__main__":
                         else:
                             print("# File Not Found #".center(66, "="))
                             break
-                    if changestate == "N" or changestate == "n":
+                    if confirm == "n":
                         print("_".center(66, "_"))
                         break
                     print("Invalid Input.")
@@ -487,7 +491,7 @@ if __name__ == "__main__":
                             data = []
 
                            ## GRABS ALL DATA FROM DATABASE ##
-                            with open(userinput+".csv", "r") as file:
+                            with open(filename, "r") as file:
                                 reader = csv.reader(file)
                                 list_of_rows = list(reader)
 
@@ -588,7 +592,7 @@ if __name__ == "__main__":
                             break
                         else:
                             print("")
-                            print("Invalid Input")
+                            print("Invalid Input.")
                             print("")
                 
                 ## IF DESCRIPTION COLUMN ##
@@ -611,7 +615,7 @@ if __name__ == "__main__":
                             break
                         else:
                             print("")
-                            print("Invalid Input")
+                            print("Invalid Input.")
                             print("")
 
                 ## IF DATE COLUMN ##
@@ -625,13 +629,13 @@ if __name__ == "__main__":
                                 break
                             else:
                                 print("")
-                                print("Invalid Input")
+                                print("Invalid Input.")
                                 print("")
                             
                 ## IF CATAGORY COLUMN ##
                 if columnindex == 4:
                     while True:
-                        userinput = input("Enter New Catagory. [U] Utilities [T] Transport [R] Rent [F] Food [S] Shopping \n[.letmeout] Quit   ").lower()
+                        userinput = input("Enter New Category. [U] Utilities [T] Transport [R] Rent [F] Food [S] Shopping \n[.letmeout] Quit   ").lower()
                         if letmeout(userinput) == True:
                             return row
                         if swapItem(userinput) != "Invalid":
@@ -639,7 +643,7 @@ if __name__ == "__main__":
                             break
                         else:
                             print("")
-                            print("Invalid Input")
+                            print("Invalid Input.")
                             print("")
                 
                 print("")
@@ -728,7 +732,7 @@ if __name__ == "__main__":
                                                             print("")
                                                             break
                                                         except ValueError:
-                                                            print("Invalid Input")
+                                                            print("Invalid Input.")
                                                             print("")
                                                             pass
                                                 else:
@@ -740,7 +744,7 @@ if __name__ == "__main__":
                                                 
                             except (ValueError, IndexError):
                                 print("")
-                                print("Invalid Input")
+                                print("Invalid Input.")
                                 print("")
                                 pass
 
