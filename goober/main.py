@@ -124,12 +124,12 @@ if __name__ == "__main__":
                 sortDatabase(data, values, "Database")
                 return
             return
-
-
-
-    ## ADD NEW RECORDS TO NEW CSV FILE ##
+    
+    
+    
+    ## CREATE DATABASE ##
     def addDatabase():
-
+        
         ## VALIDATES DATA ##
         def validate(userinput):
             try:
