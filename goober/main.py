@@ -25,12 +25,15 @@ if __name__ == "__main__":
     print("")
     print(pyfiglet.figlet_format("kitty", font="alligator", justify="center", width=68))         ## STARTUP ASCII ART
 
-    if os.getcwd() != os.path.dirname(__file__):
-        os.chdir(os.getcwd()+"/goober")
+    ##
+    directory = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(directory)
+    ##
+    
+    # if os.getcwd() != os.path.dirname(__file__):
+    #     os.chdir(os.getcwd()+"/goober")
     
     tempDatabase = []
-    
-    
     
     ## LOOKS FOR THE KEYWORD "".LETMEOUT" ON EVERY INPUT ##
     def letmeout(userinput):
@@ -109,7 +112,7 @@ if __name__ == "__main__":
         headers = ["Type","Description","Account","Date","Category"]
         data = []
         values = []
-        for i in range(1, len(tempDatabase)):
+        for i in range(0, len(tempDatabase)):
             tempDatabase[i][2] = int(tempDatabase[i][2])
             data.append(tempDatabase[i])
             values.append(tempDatabase[i][2])
@@ -550,6 +553,13 @@ if __name__ == "__main__":
              ## EDIT ROW ##
             def editrow(row, columnindex):
                 def swapItem(userinput):
+                    # items = {
+                    #     'u': 'Utilities',
+                    #     't': 'Transport',
+                    #     'r': 'Rent',
+                    #     'f': 'Food',
+                    #     's': 'Shopping'
+                    # }
                     if columnindex == 0:
                         if userinput == "i":
                             row[2] = str(abs(int(row[2])))
@@ -568,6 +578,9 @@ if __name__ == "__main__":
                                 return userinput
                         except ValueError:
                             pass
+                    # if columnindex == 4:
+                    #     return items.get(userinput.lower(), "Invalid")
+                        
                     if columnindex == 4:
                         if userinput == "u":
                             return "Utilities"
@@ -579,6 +592,7 @@ if __name__ == "__main__":
                             return "Food"
                         if userinput == "s":
                             return "Shopping"
+                        
                     return "Invalid" 
                 
                 ## IF TYPE COLUMN ##
@@ -773,7 +787,8 @@ if __name__ == "__main__":
         ## BROWSE MODE MAIN UI ##
         counter = 0
         ## LIST ALL CSV EXTENSION FILES ##
-        for files in os.listdir(os.path.dirname(__file__)):
+        for files in os.listdir(directory):
+            print(files)
             if files.endswith(".csv"):
                 counter += 1
                 csvfiles.append([files])
